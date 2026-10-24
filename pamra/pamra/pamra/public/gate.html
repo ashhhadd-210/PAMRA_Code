@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Gate Automation</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .gate-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      gap: 16px;
+    }
+    .stations {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .station {
+      background: white;
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 220px;
+    }
+    .station-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--slate-500);
+      letter-spacing: 0.6px;
+    }
+    .station-title .led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--slate-200); margin-right: 6px; vertical-align: middle; }
+    .station-title.live .led { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.6); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 50% { opacity: 0.6; } }
+
+    /* Camera viewport */
+    .camera-viewport {
+      background: #0b1622;
+      border-radius: 6px;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      color: #6ee7b7;
+      font-family: "SF Mono", Monaco, monospace;
+      font-size: 11px;
+      min-height: 140px;
+    }
+    .camera-overlay {
+      position: absolute; top: 8px; left: 8px;
+      color: #6ee7b7;
+      font-size: 10px;
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
+    .camera-overlay .rec { color: #f87171; }
+    .camera-scene {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 90%;
+    }
+    .camera-empty { color: #4b5563; }
+    .plate-box {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(110, 231, 183, 0.1);
+      border: 2px solid #6ee7b7;
+      border-radius: 4px;
+      font-size: 22px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      color: #6ee7b7;
+      box-shadow: 0 0 20px rgba(110,231,183,0.3);
+      margin: 6px 0;
+    }
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #6ee7b7, transparent);
+      opacity: 0.8;
+      animation: scan 1.6s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
+    .conf-bar {
+      display: inline-block;
+      width: 80px;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    .conf-bar > span { display: block; height: 100%; background: #6ee7b7; }
+
+    /* CNIC kiosk style */
+    .cnic-card {
+      background: linear-gradient(135deg, #0f3a1f, #186b34);
+      border-radius: 6px;
+      padding: 12px;
+      color: white;
+      font-size: 11px;
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .cnic-card .face {
+      width: 60px;
+      height: 75px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .cnic-card .field { margin-bottom: 4px; }
+    .cnic-card .label { font-size: 9px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+    .cnic-card .value { font-size: 12px; font-weight: 600; font-family: "SF Mono", Monaco, monospace; }
+
+    .verdict {
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .verdict.ok { background: var(--green-50); color: var(--green-700); }
+    .verdict.warn { background: #fef3c7; color: #92400e; }
+    .verdict.fail { background: var(--red-50); color: var(--red); }
+
+    /* Weighbridge display */
+    .weigh-display {
+      background: #0b1622;
+      color: #fbbf24;
+      font-family: "SF Mono", Monaco, monospace;
+      font-size: 36px;
+      font-weight: 700;
+      text-align: center;
+      padding: 16px;
+      border-radius: 6px;
+      letter-spacing: 4px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+      margin: 8px 0;
+    }
+    .weigh-display .unit { font-size: 14px; opacity: 0.6; margin-left: 6px; letter-spacing: 1px; }
+    .weigh-display.idle { color: #4b5563; }
+    .weigh-rows { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; font-size: 11px; }
+    .weigh-rows .lbl { color: var(--slate-500); }
+    .weigh-rows .val { color: var(--slate-900); font-weight: 600; }
+
+    /* Commodity scanner */
+    .commodity-viewport {
+      background: #0b1622;
+      border-radius: 6px;
+      flex: 1;
+      position: relative;
+      min-height: 140px;
+      overflow: hidden;
+    }
+    .commodity-result {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #6ee7b7;
+    }
+    .commodity-result .name { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .commodity-result .conf { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+
+    /* Active trucks panel */
+    .panel {
+      background: white;
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 600px;
+    }
+    .panel-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--slate-500);
+      letter-spacing: 0.6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .truck-list { flex: 1; overflow-y: auto; }
+    .truck-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--slate-100);
+      font-size: 12px;
+    }
+    .truck-row .plate { font-weight: 600; font-family: "SF Mono", Monaco, monospace; }
+    .truck-row .meta { color: var(--slate-500); font-size: 11px; }
+    .truck-row .stage-pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: var(--green-50);
+      color: var(--green-700);
+      border-radius: 999px;
+      font-weight: 600;
+      align-self: center;
+      white-space: nowrap;
+    }
+    .truck-row.flagged .stage-pill { background: #fef3c7; color: #92400e; }
+
+    .event-feed { max-height: 320px; overflow-y: auto; }
+    .event {
+      padding: 8px 10px;
+      border-left: 3px solid var(--green-500);
+      background: var(--slate-50);
+      margin-bottom: 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .event.flagged { border-left-color: var(--red); background: var(--red-50); }
+    .event .et { font-weight: 600; font-size: 11px; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5px; }
+    .event .ed { color: var(--slate-500); font-size: 11px; }
+    .event .ts { color: var(--slate-400); font-size: 10px; float: right; }
+
+    .stage-flow {
+      display: flex;
+      gap: 4px;
+      padding: 14px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .stage-node {
+      flex: 1;
+      min-width: 110px;
+      padding: 8px;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--slate-500);
+      position: relative;
+      background: var(--slate-50);
+    }
+    .stage-node.has-truck { background: var(--green-700); color: white; font-weight: 600; box-shadow: 0 0 0 3px rgba(46,161,85,0.2); }
+    .stage-node .count { font-size: 14px; font-weight: 700; display: block; }
+    .stage-node:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate-400);
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <h1 data-help="Watch trucks move through 8 stages of automated capture. Every completed truck becomes a verified arrival record in the unified data bus.">Gate Automation</h1>
+    <p class="subtitle">AI cameras, CNIC kiosks, and weighbridge sensors automatically capture every truck entering and leaving the mandi — no manual entry. Each completed flow generates a verified arrival record in the unified data bus.</p>
+
+    <div class="stage-flow" id="stage-flow" data-help="Live count of trucks at each stage. Useful to spot bottlenecks (e.g. backup at the weighbridge)."></div>
+
+    <div class="gate-grid">
+      <div class="stations">
+        <!-- ANPR Station -->
+        <div class="station" id="station-anpr">
+          <div class="station-title"><span><span class="led"></span><span data-help="Camera reads each truck's number plate as it approaches the gate. OCR'd plate is cross-checked against PAMRA's registered vehicles database.">Station 1 · ANPR Camera</span></span><span class="hint">at gate barrier</span></div>
+          <div class="camera-viewport" id="anpr-view">
+            <div class="camera-overlay"><span class="rec">● REC</span> CAM-01 · 1080p</div>
+            <div class="camera-scene camera-empty">awaiting truck…</div>
+          </div>
+          <div id="anpr-verdict"></div>
+        </div>
+
+        <!-- CNIC Kiosk -->
+        <div class="station" id="station-cnic">
+          <div class="station-title"><span><span class="led"></span><span data-help="Driver presents CNIC at the kiosk scanner. NADRA-style verification confirms identity and checks plate-to-CNIC linkage.">Station 2 · CNIC Kiosk</span></span><span class="hint">NADRA verify</span></div>
+          <div class="camera-viewport" id="cnic-view">
+            <div class="camera-overlay"><span class="rec">● REC</span> CAM-02 · driver kiosk</div>
+            <div class="camera-scene camera-empty">awaiting CNIC scan…</div>
+          </div>
+          <div id="cnic-verdict"></div>
+        </div>
+
+        <!-- Commodity Classifier -->
+        <div class="station" id="station-commodity">
+          <div class="station-title"><span><span class="led"></span><span data-help="Overhead camera classifies produce in the truck bed (wheat/cotton/vegetables/etc). Mismatch with declared commodity triggers physical inspection.">Station 3 · Commodity AI</span></span><span class="hint">overhead cam</span></div>
+          <div class="commodity-viewport" id="commodity-view">
+            <div class="camera-overlay"><span class="rec">● REC</span> CAM-03 · top-down</div>
+            <div class="camera-scene camera-empty">awaiting truck bed scan…</div>
+          </div>
+          <div id="commodity-verdict"></div>
+        </div>
+
+        <!-- Weighbridge -->
+        <div class="station" id="station-weigh">
+          <div class="station-title"><span><span class="led"></span><span data-help="Load cells capture gross-in (entering loaded) and tare-out (exiting empty). Net = gross − tare = actual produce delivered. Auto-published to the records pipeline.">Station 4 · Weighbridge</span></span><span class="hint">load cells live</span></div>
+          <div class="weigh-display idle" id="weigh-display">0<span class="unit">kg</span></div>
+          <div class="weigh-rows" id="weigh-rows">
+            <div><div class="lbl" data-help="Weight when the loaded truck enters — what the driver brought.">Gross-in</div><div class="val" id="weigh-gross">—</div></div>
+            <div><div class="lbl" data-help="Weight when the empty truck leaves — the empty vehicle weight.">Tare-out</div><div class="val" id="weigh-tare">—</div></div>
+            <div><div class="lbl" data-help="Net weight = gross − tare. This is the actual quantity of produce that entered the mandi.">Net</div><div class="val" id="weigh-net">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: active trucks + live events -->
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="panel">
+          <div class="panel-title" data-help="All trucks currently somewhere in the 8-stage flow. Rows highlighted yellow have one or more flags (unregistered plate, CNIC mismatch, commodity mismatch).">Active trucks <span id="truck-count" style="float:right;color:var(--green-700);font-weight:700">0</span></div>
+          <div class="truck-list" id="truck-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title" data-help="Every event from every station in chronological order. Anomalies highlighted in red — useful for live monitoring by HQ.">Live event feed</div>
+          <div class="event-feed" id="event-feed"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script src="/gate.js"></script>
+</body>
+</html>

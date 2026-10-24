@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 d9a5c01156fe63713395668fa1a614fd2cae47dd Huzaifa Arshad <haidaralikhan6950@gmail.com> 1778677360 +0500	commit (initial): Initial commit: PAMRA Unified Market Intelligence Platform demo
+d9a5c01156fe63713395668fa1a614fd2cae47dd aec24c7da025d15142d4a25a9177ad9c3b437299 Huzaifa Arshad <haidaralikhan6950@gmail.com> 1780601756 +0500	commit: Add tamper-proof Integrity Ledger (proposal Module 3)
+aec24c7da025d15142d4a25a9177ad9c3b437299 94aa63f3f677369cd4c9df64be3b7eca6ccb3738 Huzaifa Arshad <haidaralikhan6950@gmail.com> 1780651765 +0500	commit: Make prototype deployable on Vercel as a static client-side build
+94aa63f3f677369cd4c9df64be3b7eca6ccb3738 61e2180f100adf1e96224c6de8ff044f7753e39e Huzaifa Arshad <haidaralikhan6950@gmail.com> 1780653276 +0500	commit: Rebuild AMIS dashboard in amis.pk style
+61e2180f100adf1e96224c6de8ff044f7753e39e 82bb24a3b0d17fa0122ae7e1936bd50d2dd6a6cf Huzaifa Arshad <haidaralikhan6950@gmail.com> 1780662195 +0500	commit: Rebuild MCMIS dashboard as a full Market-Committee MIS

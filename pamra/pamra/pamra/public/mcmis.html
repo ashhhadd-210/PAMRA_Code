@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · MCMIS — Market Committee Management Information System</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .mc-banner {
+      background: linear-gradient(120deg, var(--green-800), var(--green-700));
+      color: #fff; border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .mc-banner h1 { margin: 0; font-size: 20px; color: #fff; }
+    .mc-banner .ur { font-size: 16px; opacity: 0.9; }
+    .mc-banner p { margin: 4px 0 0; font-size: 12px; opacity: 0.85; max-width: 640px; }
+    .mc-banner .gov { font-size: 11px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+
+    .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .counter { background: #fff; border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow-sm); border-top: 3px solid var(--green-700); }
+    .counter.gold { border-top-color: var(--gold-500); }
+    .counter.amber { border-top-color: var(--amber); }
+    .counter.blue { border-top-color: #2563eb; }
+    .counter.red { border-top-color: var(--red); }
+    .counter .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--slate-500); font-weight: 700; }
+    .counter .value { font-size: 23px; font-weight: 800; color: var(--slate-900); margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .counter .sub { font-size: 11px; color: var(--slate-500); margin-top: 2px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
+    .grid-2.even { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 1050px) { .grid-2, .grid-2.even { grid-template-columns: 1fr; } }
+
+    table.dt2 { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.dt2 thead th { background: var(--green-50); color: var(--green-800); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; padding: 8px 10px; border-bottom: 2px solid var(--green-100); white-space: nowrap; position: sticky; top: 0; }
+    table.dt2 thead th.l { text-align: left; }
+    table.dt2 tbody td { padding: 8px 10px; border-bottom: 1px solid var(--slate-100); text-align: right; font-variant-numeric: tabular-nums; }
+    table.dt2 tbody td.l { text-align: left; }
+    table.dt2 tbody tr:hover { background: var(--slate-50); }
+    .nm { font-weight: 600; color: var(--slate-900); }
+    .dist { font-size: 11px; color: var(--slate-500); }
+    .progress { height: 7px; background: var(--slate-100); border-radius: 4px; overflow: hidden; min-width: 70px; }
+    .progress > span { display: block; height: 100%; background: var(--green-600); }
+    .progress.low > span { background: var(--red); } .progress.mid > span { background: var(--amber); }
+    .tbl-wrap { max-height: 420px; overflow-y: auto; }
+
+    #revchart { width: 100%; height: 220px; }
+
+    .lic-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .lic-card { background: #fff; border: 1px solid var(--slate-100); border-radius: 10px; padding: 14px; box-shadow: var(--shadow-sm); }
+    .lic-card .t { font-size: 12px; font-weight: 700; color: var(--green-800); min-height: 30px; }
+    .lic-card .big { font-size: 24px; font-weight: 800; margin: 6px 0 2px; }
+    .lic-card .row { display: flex; justify-content: space-between; font-size: 11px; color: var(--slate-500); margin-top: 3px; }
+    .lic-card .row b { color: var(--slate-800); }
+    .pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .pill.new { background: var(--green-50); color: var(--green-700); }
+    .pill.due { background: #fef3c7; color: #92400e; }
+
+    .commodity-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .chip { font-size:11px; background:var(--slate-50); border:1px solid var(--slate-100); border-radius:999px; padding:3px 9px; }
+    .chip b { color: var(--green-800); }
+
+    /* existing-style helpers */
+    .stars { color: var(--gold-500); font-size: 12px; }
+    .attendance-cell { font-weight: 600; color: var(--green-700); }
+    .attendance-cell.low { color: var(--red); }
+    .issue-row { padding: 10px 12px; border-bottom: 1px solid var(--slate-100); display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; }
+    .issue-row .meta { font-size: 11px; color: var(--slate-500); }
+    select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--slate-200); font-size: 13px; background: white; }
+    .section-title { font-size: 13px; font-weight: 800; color: var(--slate-800); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <div class="mc-banner">
+      <div>
+        <h1>MCMIS — Market Committee Management Information System <span class="ur">مارکیٹ کمیٹی</span></h1>
+        <p>Fee collection, licensing of arhtis &amp; traders, daily auctions and arrivals across PAMRA market committees in Punjab — one digital system for transparent agricultural marketing.</p>
+      </div>
+      <span class="gov">Govt. of Punjab · Agriculture Marketing</span>
+    </div>
+
+    <div class="counters" id="counters"></div>
+
+    <!-- Fee collection + revenue trend -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><h2 data-help="Fee/revenue collection per market committee against its annual (financial-year) target. Bar shows collection %, with today's collection and pending dues.">Fee collection by market committee</h2><span class="hint">FY target vs collected</span></div>
+        <div class="tbl-wrap">
+          <table class="dt2">
+            <thead><tr><th class="l">Committee</th><th>FY target</th><th>Collected</th><th class="l">Progress</th><th>Today</th><th>Pending</th></tr></thead>
+            <tbody id="fees"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2 data-help="Province-wide fee collection over the last 12 months — collected (green) against target (grey).">Revenue trend · 12 months</h2></div>
+        <div class="card-body"><canvas id="revchart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Licensing -->
+    <div class="section-title">Licensing — registered market players</div>
+    <div class="lic-cards" id="lic-cards"></div>
+
+    <!-- Auctions & arrivals + districts -->
+    <div class="grid-2 even" style="margin-top:18px">
+      <div class="card">
+        <div class="card-header"><h2 data-help="Today's auction activity and commodity arrivals per market committee — lots auctioned, tonnage arrived, vehicles and gate passes issued.">Daily auctions &amp; arrivals</h2><span class="hint">today</span></div>
+        <div class="tbl-wrap">
+          <table class="dt2">
+            <thead><tr><th class="l">Committee</th><th>Auction lots</th><th>Arrivals (t)</th><th>Vehicles</th><th>Gate passes</th></tr></thead>
+            <tbody id="auctions"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2 data-help="Fee collection rolled up by district/division — shows which areas are collecting best.">District-wise collection</h2></div>
+        <div class="tbl-wrap">
+          <table class="dt2">
+            <thead><tr><th class="l">District</th><th>Committees</th><th>FY target</th><th>Collected</th><th class="l">%</th></tr></thead>
+            <tbody id="districts"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff + Infra (existing) -->
+    <div class="section-title">Staff &amp; infrastructure</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h2 data-help="Every employee across PAMRA market committees with attendance. Sub-85% 30-day attendance shown in red.">Staff roster</h2>
+          <select id="staff-market-filter"><option value="">All committees</option></select>
+        </div>
+        <div class="tbl-wrap" id="staff-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2 data-help="Live tracker of facility problems across market committees. High-severity issues route to PAMRA HQ.">Open infrastructure issues</h2><span class="hint" id="issue-count"></span></div>
+        <div id="issues"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    const pkr = (n) => PAMRA.formatPkr(n);
+
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('mcmis');
+
+      const [summary, fees, licenses, auctions, districts, trend, staff, issues, markets] = await Promise.all([
+        PAMRA.api('/api/mcmis/summary'),
+        PAMRA.api('/api/mcmis/fees'),
+        PAMRA.api('/api/mcmis/licenses'),
+        PAMRA.api('/api/mcmis/auctions'),
+        PAMRA.api('/api/mcmis/districts'),
+        PAMRA.api('/api/mcmis/revenue-trend'),
+        PAMRA.api('/api/mcmis/staff'),
+        PAMRA.api('/api/mcmis/infra-issues'),
+        PAMRA.api('/api/markets')
+      ]);
+
+      // Counters
+      const fyPct = Math.round((summary.fy_collected_pkr / summary.fy_target_pkr) * 100);
+      document.getElementById('counters').innerHTML = [
+        { c: '', label: 'Market committees', val: summary.committees, sub: 'PAMRA-regulated' },
+        { c: 'blue', label: 'Registered licensees', val: summary.total_licensees.toLocaleString(), sub: `${summary.new_licenses_month} new this month` },
+        { c: 'gold', label: 'Fee collected (FY)', val: pkr(summary.fy_collected_pkr), sub: `${fyPct}% of target` },
+        { c: 'gold', label: 'Collected today', val: pkr(summary.fee_today_pkr), sub: `${summary.challans_today.toLocaleString()} challans` },
+        { c: '', label: 'Auction lots today', val: summary.auction_lots_today.toLocaleString(), sub: 'across all mandis' },
+        { c: '', label: 'Arrivals today', val: summary.arrivals_today_tons.toLocaleString() + ' t', sub: 'commodity inflow' },
+        { c: 'blue', label: 'Gate passes today', val: summary.gate_passes_today.toLocaleString(), sub: 'vehicles processed' },
+        { c: 'amber', label: 'Renewals due', val: summary.renewals_due.toLocaleString(), sub: 'licenses to renew' },
+        { c: '', label: 'Staff present', val: `${summary.present_today}/${summary.total_staff}`, sub: 'biometric punch-in' },
+        { c: 'red', label: 'Open issues', val: summary.open_issues, sub: 'infrastructure' }
+      ].map(k => `
+        <div class="counter ${k.c}">
+          <div class="label">${k.label}</div>
+          <div class="value" data-count="${typeof k.val === 'number' ? k.val : ''}">${k.val}</div>
+          <div class="sub">${k.sub}</div>
+        </div>`).join('');
+      animateCounters();
+
+      // Fees table
+      document.getElementById('fees').innerHTML = [...fees].sort((a, b) => b.fy_collected_pkr - a.fy_collected_pkr).map(f => {
+        const cls = f.collection_pct >= 80 ? '' : f.collection_pct >= 60 ? 'mid' : 'low';
+        return `<tr>
+          <td class="l"><span class="nm">${f.market_name}</span><br><span class="dist">${f.district}</span></td>
+          <td>${pkr(f.fy_target_pkr)}</td>
+          <td>${pkr(f.fy_collected_pkr)}</td>
+          <td class="l"><div class="progress ${cls}"><span style="width:${Math.min(f.collection_pct, 100)}%"></span></div><span class="dist">${f.collection_pct}%</span></td>
+          <td>${pkr(f.today_collected_pkr)}</td>
+          <td style="color:var(--red)">${pkr(f.pending_pkr)}</td>
+        </tr>`;
+      }).join('');
+
+      // Revenue trend chart
+      renderBars(document.getElementById('revchart'), trend);
+
+      // License cards
+      document.getElementById('lic-cards').innerHTML = licenses.by_type.map(t => `
+        <div class="lic-card">
+          <div class="t">${t.type}</div>
+          <div class="big">${t.active.toLocaleString()}</div>
+          <div class="row"><span>Active</span><b>${t.active.toLocaleString()}</b></div>
+          <div class="row"><span>Suspended</span><b>${t.suspended}</b></div>
+          <div class="row" style="margin-top:6px"><span class="pill new">+${t.new_this_month} new</span><span class="pill due">${t.renewals_due} due</span></div>
+        </div>`).join('');
+
+      // Auctions table
+      document.getElementById('auctions').innerHTML = [...auctions].sort((a, b) => b.arrivals_tons - a.arrivals_tons).map(a => `
+        <tr>
+          <td class="l"><span class="nm">${a.market_name}</span><br><span class="dist">${a.district}</span></td>
+          <td>${a.auction_lots}</td>
+          <td><strong style="color:var(--green-800)">${a.arrivals_tons.toLocaleString()}</strong></td>
+          <td>${a.vehicles_in}</td>
+          <td>${a.gate_passes}</td>
+        </tr>`).join('');
+
+      // Districts table
+      document.getElementById('districts').innerHTML = districts.map(d => {
+        const cls = d.collection_pct >= 80 ? '' : d.collection_pct >= 60 ? 'mid' : 'low';
+        return `<tr>
+          <td class="l"><span class="nm">${d.district}</span><br><span class="dist">${d.division} Division</span></td>
+          <td>${d.committees}</td>
+          <td>${pkr(d.fy_target_pkr)}</td>
+          <td>${pkr(d.fy_collected_pkr)}</td>
+          <td class="l"><div class="progress ${cls}"><span style="width:${Math.min(d.collection_pct, 100)}%"></span></div><span class="dist">${d.collection_pct}%</span></td>
+        </tr>`;
+      }).join('');
+
+      // Staff roster
+      const filter = document.getElementById('staff-market-filter');
+      markets.forEach(m => filter.insertAdjacentHTML('beforeend', `<option value="${m.id}">${m.name}</option>`));
+      function renderStaff(list) {
+        document.getElementById('staff-list').innerHTML = `
+          <table class="dt2">
+            <thead><tr><th class="l">Name</th><th class="l">Position</th><th class="l">Committee</th><th class="l">Present</th><th>30d %</th></tr></thead>
+            <tbody>${list.slice(0, 60).map(s => `
+              <tr>
+                <td class="l"><strong>${s.name}</strong><br><span class="dist">${s.cnic}</span></td>
+                <td class="l">${s.position}</td>
+                <td class="l">${s.market_name}</td>
+                <td class="l">${s.present_today ? `<span class="badge green">✓ ${s.punch_in}</span>` : '<span class="badge red">absent</span>'}</td>
+                <td class="attendance-cell ${s.attendance_30d_pct < 85 ? 'low' : ''}">${s.attendance_30d_pct}%</td>
+              </tr>`).join('')}</tbody>
+          </table>`;
+      }
+      renderStaff(staff);
+      filter.addEventListener('change', async () => {
+        const list = filter.value ? await PAMRA.api('/api/mcmis/staff?market=' + filter.value) : staff;
+        renderStaff(list);
+      });
+
+      // Issues
+      const openIssues = issues.filter(i => i.status !== 'resolved');
+      document.getElementById('issue-count').textContent = `${openIssues.length} open · ${issues.length - openIssues.length} resolved`;
+      document.getElementById('issues').innerHTML = openIssues.length === 0
+        ? '<div style="padding:20px;text-align:center;color:var(--slate-400)">No open issues. All committees operational.</div>'
+        : openIssues.map(i => `
+          <div class="issue-row">
+            <div><strong>${i.type}</strong><div class="meta">${i.market_name} · reported ${i.reported_at} · ID ${i.id}</div></div>
+            <div>
+              <span class="badge ${i.severity === 'high' ? 'red' : i.severity === 'medium' ? 'amber' : 'slate'}">${i.severity}</span>
+              <span class="badge ${i.status === 'open' ? 'red' : 'amber'}" style="margin-left:4px">${i.status.replace('_', ' ')}</span>
+            </div>
+          </div>`).join('');
+    })();
+
+    function animateCounters() {
+      document.querySelectorAll('.counter .value[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count, 10);
+        if (!target || isNaN(target)) return;
+        const start = performance.now(), dur = 700;
+        const step = (t) => {
+          const p = Math.min(1, (t - start) / dur);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString();
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }
+
+    // 12-month grouped bar chart (collected vs target)
+    function renderBars(canvas, data) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      const pad = { l: 44, r: 10, t: 12, b: 22 };
+      const w = rect.width - pad.l - pad.r, h = rect.height - pad.t - pad.b;
+      const max = Math.max(...data.map(d => d.target_pkr)) * 1.05;
+      const bw = w / data.length;
+      ctx.font = '9px -apple-system, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#e2e8f0';
+      for (let i = 0; i <= 4; i++) { const y = pad.t + (h * i / 4); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + w, y); ctx.stroke(); ctx.fillText('Rs ' + Math.round((max - max * i / 4) / 1e6) + 'M', 2, y + 3); }
+      data.forEach((d, i) => {
+        const x = pad.l + i * bw;
+        const th = (d.target_pkr / max) * h, ch = (d.collected_pkr / max) * h;
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(x + bw * 0.2, pad.t + h - th, bw * 0.6, th);
+        ctx.fillStyle = '#186b34'; ctx.fillRect(x + bw * 0.2, pad.t + h - ch, bw * 0.6, ch);
+        ctx.fillStyle = '#94a3b8'; ctx.fillText(d.month, x + bw * 0.5 - 8, rect.height - 8);
+      });
+    }
+  </script>
+</body>
+</html>

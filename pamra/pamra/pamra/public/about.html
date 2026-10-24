@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About PAMRA · Punjab Agricultural Marketing Regulatory Authority</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .leadership-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .person-card { background: white; border-radius: 8px; padding: 20px; text-align: center; box-shadow: var(--shadow-sm); }
+    .person-card .avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--pk-green); color: white; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; margin: 0 auto 14px; }
+    .person-card .role { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-top: 4px; }
+    .timeline-item { padding: 16px 0 16px 30px; border-left: 2px solid var(--green-line); position: relative; }
+    .timeline-item::before { content: ''; position: absolute; left: -7px; top: 22px; width: 12px; height: 12px; border-radius: 50%; background: var(--pk-green); }
+    .timeline-item .year { font-size: 18px; font-weight: 700; color: var(--pk-green); }
+    .timeline-item p { color: var(--slate-700); margin: 6px 0 0; }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · About</div>
+      <h1 data-i18n="hero_about">About PAMRA</h1>
+      <p class="lead" data-i18n="hero_about_lead">The Punjab Agricultural Marketing Regulatory Authority is the statutory body responsible for transforming, regulating, and modernizing agricultural produce markets across Punjab, Pakistan.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:48px">
+        <div>
+          <h2 class="section-title" style="margin-bottom:16px">Our Mandate</h2>
+          <p style="color:var(--slate-700);font-size:15px">PAMRA was established under the Punjab Agricultural Marketing Regulatory Authority Act 2018. Its core mandate covers:</p>
+          <ul style="color:var(--slate-700);font-size:15px;line-height:1.8">
+            <li><strong>Regulation:</strong> License and supervise agricultural produce markets and auction yards.</li>
+            <li><strong>Modernization:</strong> Upgrade physical infrastructure and adopt digital systems.</li>
+            <li><strong>Transparency:</strong> Ensure fair price discovery through open, monitored auctions.</li>
+            <li><strong>Farmer welfare:</strong> Protect cultivators from middleman exploitation and undervaluation.</li>
+            <li><strong>Private sector engagement:</strong> Encourage investment in market infrastructure.</li>
+            <li><strong>Data integrity:</strong> Maintain accurate market data for evidence-based policy.</li>
+          </ul>
+
+          <h2 class="section-title" style="margin-top:36px" id="history">History</h2>
+          <div class="timeline-item">
+            <div class="year">2018</div>
+            <p><strong>PAMRA Act enacted</strong> by the Punjab Assembly, establishing the Authority and dissolving the old market committee model in favor of a centralized regulator.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="year">2019</div>
+            <p>Initial pilot of <strong>MCMIS</strong> (Market Committee Management Information System) across 10 markets in central Punjab.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="year">2020</div>
+            <p>Launch of <strong>AMIS</strong> (amis.pk) — public commodity price portal updated daily.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="year">2022</div>
+            <p>Launch of <strong>Mandi Auction App</strong> (mandiauction.punjab.gov.pk) for live in-mandi auction capture.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="year">2026</div>
+            <p>Rollout of the <strong>Unified Market Intelligence Platform</strong> — integrating MCMIS, AMIS, and Mandi App with AI-driven gate automation and a four-layer data authenticity engine.</p>
+          </div>
+        </div>
+        <aside>
+          <div style="background:var(--green-bg);padding:24px;border-radius:8px;border-left:4px solid var(--pk-green);margin-bottom:24px">
+            <h3 style="color:var(--pk-green);margin:0 0 14px;font-size:15px">Legal foundation</h3>
+            <p style="font-size:13px;color:var(--slate-700);margin:0 0 8px"><strong>PAMRA Act 2018</strong></p>
+            <p style="font-size:12px;color:var(--slate-500);margin:0">Punjab Act No. XII of 2018 — empowering the Authority to regulate agricultural produce markets.</p>
+          </div>
+          <div style="background:var(--gold-light);padding:24px;border-radius:8px;border-left:4px solid var(--gold)">
+            <h3 style="color:var(--gold);margin:0 0 14px;font-size:15px">Did you know?</h3>
+            <p style="font-size:13px;color:var(--slate-700);margin:0">Punjab is Pakistan's largest agricultural province, contributing over 65% of national food grain output. PAMRA regulates the markets where over Rs 18 crore of produce changes hands every month.</p>
+          </div>
+        </aside>
+      </div>
+
+      <h2 class="section-title" style="margin-top:48px" id="leadership">Leadership</h2>
+      <div class="leadership-grid">
+        <div class="person-card">
+          <div class="avatar">TM</div>
+          <h3 style="margin:0">Tariq Mehmood</h3>
+          <div class="role">Director General</div>
+          <p style="font-size:12px;color:var(--slate-500);margin:8px 0 0">Heads PAMRA HQ and chairs the Strategic Steering Committee.</p>
+        </div>
+        <div class="person-card">
+          <div class="avatar">SB</div>
+          <h3 style="margin:0">Sara Bhutta</h3>
+          <div class="role">Director, Data &amp; Analytics</div>
+          <p style="font-size:12px;color:var(--slate-500);margin:8px 0 0">Leads the data integrity, MIS, and platform engineering teams.</p>
+        </div>
+        <div class="person-card">
+          <div class="avatar">AK</div>
+          <h3 style="margin:0">Ali Raza Khan</h3>
+          <div class="role">Director, Field Operations</div>
+          <p style="font-size:12px;color:var(--slate-500);margin:8px 0 0">Oversees inspector cadre, gate automation deployments, and committee liaison.</p>
+        </div>
+        <div class="person-card">
+          <div class="avatar">IS</div>
+          <h3 style="margin:0">Imran Sheikh</h3>
+          <div class="role">Secretary, Market Committees</div>
+          <p style="font-size:12px;color:var(--slate-500);margin:8px 0 0">Coordinates with elected market committees across all PAMRA districts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>SitePublic.render('about');</script>
+</body>
+</html>

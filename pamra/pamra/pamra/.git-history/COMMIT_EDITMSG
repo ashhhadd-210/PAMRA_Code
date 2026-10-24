@@ -1,0 +1,22 @@
+Rebuild MCMIS dashboard as a full Market-Committee MIS
+
+Mirrors PITB's Market Committee Management Information System for Punjab
+agriculture marketing — the real mandi functions beyond staff/finance:
+
+- Fee/revenue collection per committee vs FY target (collection %, today,
+  pending) + 12-month province revenue trend chart
+- Licensing of registered market players: Commission Agent (Arhti), Trader
+  (Beopari), Weighman (Tolaidar), Contractor (Theka), Broker (Dalal) — active,
+  suspended, new-this-month, renewals due
+- Daily auctions & arrivals per committee (lots, tonnage, vehicles, gate passes)
+- District/division-wise collection rollup
+- 10 animated KPI counters; existing staff roster + infra issues retained
+
+Data layer (mcmisData.js): licenses, auctions, fees, revenueTrend,
+districtSummary(), licenseTypeSummary(), extendedSummary(). New endpoints
+/api/mcmis/{licenses,auctions,fees,revenue-trend,districts} + extended summary,
+added to server.js and the browser runtime; bundle rebuilt.
+
+Verified rendered in headless Chrome.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>

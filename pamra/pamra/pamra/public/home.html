@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · From Digital Mandi to a Unified Market Platform</title>
+  <meta name="description" content="Punjab Agricultural Marketing Regulatory Authority — a CRM-led Unified Market Platform that breaks the arthi chain, verifies every truck, and earns the right to forecast. Integrity before intelligence." />
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    /* Strategy-page helpers (scoped, reuse the existing palette) */
+    .kicker { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:800; margin-bottom:10px; }
+    .chain-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .chain-card { background:white; border:1px solid var(--green-line); border-radius:8px; padding:20px; box-shadow:var(--shadow-sm); }
+    .chain-card .role { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--slate-500); font-weight:700; }
+    .chain-card .price { font-size:26px; font-weight:800; margin:6px 0 8px; }
+    .chain-card .desc { font-size:13px; color:var(--slate-700); }
+    .leak-grid, .module-grid, .integrity-grid { display:grid; gap:16px; }
+    .leak-grid { grid-template-columns:repeat(3,1fr); }
+    .integrity-grid { grid-template-columns:repeat(4,1fr); }
+    .module-grid { grid-template-columns:repeat(3,1fr); }
+    .scard { background:white; border:1px solid var(--green-line); border-radius:8px; padding:22px; box-shadow:var(--shadow-sm); }
+    .scard .tag { display:inline-block; font-size:10px; letter-spacing:1px; font-weight:800; text-transform:uppercase; padding:3px 8px; border-radius:999px; margin-bottom:10px; }
+    .tag-integrity { background:var(--green-bg); color:var(--pk-green); }
+    .tag-trust { background:#eef6ff; color:#1f5fa6; }
+    .tag-intel { background:var(--gold-light); color:#8a6d11; }
+    .scard h3 { margin:4px 0 8px; font-size:17px; }
+    .scard p { font-size:13.5px; color:var(--slate-700); margin:0; }
+    .scard .num { font-size:30px; font-weight:800; color:var(--gold); }
+    .impact { margin-top:14px; padding-top:12px; border-top:1px solid var(--slate-200); font-size:12px; }
+    .impact b { color:var(--red); }
+    .reframe-row { display:grid; grid-template-columns:1fr 40px 1fr; align-items:center; gap:12px; margin-bottom:10px; }
+    .reframe-from { background:var(--slate-100); color:var(--slate-500); border-radius:8px; padding:14px 16px; font-size:14px; }
+    .reframe-to { background:var(--green-bg); color:var(--pk-green); border-radius:8px; padding:14px 16px; font-size:14px; font-weight:700; border-left:3px solid var(--pk-green); }
+    .reframe-arrow { text-align:center; color:var(--gold); font-weight:800; font-size:20px; }
+    table.loop { width:100%; border-collapse:collapse; }
+    table.loop th { text-align:left; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--pk-green); padding:10px 12px; border-bottom:2px solid var(--green-line); }
+    table.loop td { padding:14px 12px; border-bottom:1px solid var(--slate-200); font-size:13.5px; vertical-align:top; }
+    table.loop td.out { color:var(--pk-green); font-weight:600; }
+    .phase-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    .phase { background:white; border:1px solid var(--green-line); border-radius:8px; padding:16px; box-shadow:var(--shadow-sm); }
+    .phase .p { font-size:22px; font-weight:800; color:var(--pk-green); }
+    .phase .when { font-size:11px; color:var(--gold); font-weight:700; letter-spacing:1px; }
+    .phase h4 { margin:6px 0 6px; font-size:14px; }
+    .phase p { font-size:12px; color:var(--slate-700); margin:0; }
+    .funnel { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .funnel .step { background:rgba(255,255,255,0.08); border-radius:8px; padding:16px; }
+    .funnel .step .n { color:var(--gold); font-weight:800; font-size:18px; }
+    .funnel .step .t { color:white; font-size:13px; margin-top:6px; }
+    .chairman-band { display:grid; grid-template-columns:180px 1fr; gap:32px; align-items:center; background:white; border:1px solid var(--green-line); border-radius:12px; padding:28px; box-shadow:var(--shadow-sm); }
+    .chairman-photo { width:180px; aspect-ratio:3/4; object-fit:cover; border-radius:10px; border:1px solid var(--green-line); display:block; }
+    @media (max-width:880px){ .chairman-band{ grid-template-columns:1fr; justify-items:center; text-align:center; } }
+    @media (max-width:880px){
+      .chain-grid,.leak-grid,.integrity-grid,.module-grid,.phase-grid,.funnel{ grid-template-columns:1fr 1fr; }
+      .reframe-row{ grid-template-columns:1fr; } .reframe-arrow{ display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <!-- Hero -->
+  <section class="home-hero">
+    <div class="container">
+      <div class="badge">★ Government of Punjab · PAMRA Act 2018</div>
+      <h1>From Digital Mandi to a Unified Market Platform.</h1>
+      <p class="tagline">Punjab's mandi problem is an information-integrity problem — not a digitisation problem. Register the farmer, verify every truck, lock data entry — then fee recovery and forecasting become real. A unified CRM is the spine, not another dashboard.</p>
+      <div class="cta-row">
+        <a href="/login" class="btn-primary">Sign in to Platform</a>
+        <a href="/patmn" class="btn-secondary">The PATMN vision →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem stats strip -->
+  <div class="stats-strip">
+    <div class="container">
+      <div class="grid">
+        <div class="stat"><div class="num">~6%</div><div class="lbl">Farmer's share of the retail rupee</div></div>
+        <div class="stat"><div class="num">2.8×</div><div class="lbl">Same-day onion price gap across markets</div></div>
+        <div class="stat"><div class="num">83/234</div><div class="lbl">Markets reporting on the day reviewed</div></div>
+        <div class="stat"><div class="num">~19%</div><div class="lbl">Contradiction in PAMRA's own potato data</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message from the Chairman -->
+  <section class="alt">
+    <div class="container">
+      <div class="kicker">Message from the Chairman</div>
+      <div class="chairman-band">
+        <img src="/chairman.jpg" alt="Malik Ahmed Saeed Khan, Chairman PAMRA" class="chairman-photo" />
+        <div>
+          <h2 class="section-title" style="font-size:24px;margin-top:0">"Digitisation alone records the market; integrity transforms it."</h2>
+          <p style="color:var(--slate-700);font-size:15px;margin:0 0 14px">Of every rupee a household pays for produce, the farmer often receives only a fraction, an imbalance sustained by information asymmetry. The challenge before us is not merely one of technology; it is fundamentally one of trust and integrity. Guided by this conviction, PAMRA is advancing toward a Unified Market Platform and the PATMN vision, keeping our farmers at the heart of every transaction.</p>
+          <div style="font-weight:800;color:var(--slate-900)">Malik Ahmed Saeed Khan</div>
+          <div style="color:var(--slate-500);font-size:13px;margin-bottom:16px">Chairman · Pakistan Agricultural Marketing Regulatory Authority (PAMRA)</div>
+          <a href="/chairman" class="btn-green">Read the full message →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The problem, quantified -->
+  <section>
+    <div class="container">
+      <div class="kicker">The problem, quantified</div>
+      <h2 class="section-title" style="font-size:30px">₨85 of value is created between field and plate. The grower touches ₨5 of it.</h2>
+      <p class="section-lead" style="margin-left:0;text-align:left">The markup is protected by information asymmetry. A faster auction screen doesn't change who controls the number — it just records the same number more quickly.</p>
+      <div class="chain-grid">
+        <div class="chain-card"><div class="role">Farmer</div><div class="price" style="color:var(--pk-green)">₨5/kg</div><div class="desc">Sells to the arthi at the farm gate. No price reference, no buyer choice.</div></div>
+        <div class="chain-card"><div class="role">Arthi · commission agent</div><div class="price" style="color:var(--gold)">₨25–35/kg</div><div class="desc">Aggregates, sets the rate, controls who bids. The information bottleneck.</div></div>
+        <div class="chain-card"><div class="role">Mandi · wholesale</div><div class="price" style="color:var(--pk-green-light)">₨35–55/kg</div><div class="desc">Auctioned and graded. Quantities recorded by a market operator.</div></div>
+        <div class="chain-card"><div class="role">Consumer</div><div class="price" style="color:var(--slate-900)">₨80–90/kg</div><div class="desc">Pays the full markup. Volatility is blamed on "supply."</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Where the value leaks -->
+  <section class="alt">
+    <div class="container">
+      <div class="kicker">Where the value leaks</div>
+      <h2 class="section-title" style="font-size:30px">Three failure points — one root cause: the number is never independently verified.</h2>
+      <div class="leak-grid">
+        <div class="scard">
+          <h3>01 · Arthi intermediation</h3>
+          <p>The commission agent is the only party who sees demand and sets the farm-gate price. The grower has no live reference and no alternative buyer.</p>
+          <div class="impact">IMPACT — <b>Captures the grower's margin</b></div>
+        </div>
+        <div class="scard">
+          <h3>02 · Unverified truck weight</h3>
+          <p>Arrival weight is a single figure typed by one operator. With no empty-vehicle (tare) weigh-out, the real commodity quantity is unknowable.</p>
+          <div class="impact">IMPACT — <b>Quantity can be understated at will</b></div>
+        </div>
+        <div class="scard">
+          <h3>03 · Operator data manipulation</h3>
+          <p>Market operators are paid to mis-record quantities. AMIS data is hand-keyed through a data-entry dashboard — exactly the surface that is gamed.</p>
+          <div class="impact">IMPACT — <b>Corrupts every downstream figure</b></div>
+        </div>
+      </div>
+      <p style="margin-top:18px;color:var(--slate-700);font-size:14px">These are not three projects. They are the same missing control — a verified, attributable record of <em>who brought what</em> — appearing at three stages of the chain.</p>
+    </div>
+  </section>
+
+  <!-- Root cause -->
+  <section>
+    <div class="container">
+      <div class="kicker">Root cause</div>
+      <h2 class="section-title" style="font-size:30px">Garbage in, garbage out.</h2>
+      <p class="section-lead" style="margin-left:0;text-align:left">The data PAMRA already collects fails four basic integrity tests — so no analytics layer built on top of it can be trusted.</p>
+      <div class="integrity-grid">
+        <div class="scard"><h3>Hand-keyed at source</h3><p>Prices and arrivals are typed manually via the AMIS data-entry dashboard. The figure is only as honest as the operator.</p></div>
+        <div class="scard"><div class="num">83/234</div><h3 style="margin-top:4px">Patchy coverage</h3><p>On the day reviewed, only 83 of ~234 markets reported. Province-wide pictures are built from a partial, shifting sample.</p></div>
+        <div class="scard"><div class="num">~1 mo</div><h3 style="margin-top:4px">Stale by a month</h3><p>Demand data runs on a one-month lag; 2024–26 actuals are largely unavailable. Decisions run on estimates.</p></div>
+        <div class="scard"><div class="num">~19%</div><h3 style="margin-top:4px">Internally contradictory</h3><p>PAMRA's own analysis states potato output as both 9.81M and 8.24M tons — a ~19% gap from the same source.</p></div>
+      </div>
+      <p style="margin-top:18px;color:var(--red);font-size:14px;font-weight:600">You cannot forecast your way out of a measurement problem.</p>
+    </div>
+  </section>
+
+  <!-- The reframe -->
+  <section class="alt">
+    <div class="container">
+      <div class="kicker">The reframe</div>
+      <h2 class="section-title" style="font-size:30px">Stop building a faster mandi. Build the system of record the mandi never had.</h2>
+      <div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--slate-500);font-weight:700;margin:8px 0 14px">
+        <span>From · Digital Mandi</span><span>To · Unified Market Platform</span>
+      </div>
+      <div class="reframe-row"><div class="reframe-from">Digitises the existing arthi-centric flow</div><div class="reframe-arrow">→</div><div class="reframe-to">Registers every farmer, arthi, trader &amp; consignment</div></div>
+      <div class="reframe-row"><div class="reframe-from">One manual weight, one operator</div><div class="reframe-arrow">→</div><div class="reframe-to">Two-weighment net weight, auto-fed from the bridge</div></div>
+      <div class="reframe-row"><div class="reframe-from">Farmer is outside the system</div><div class="reframe-arrow">→</div><div class="reframe-to">Farmer is a first-class actor with live price visibility</div></div>
+      <div class="reframe-row"><div class="reframe-from">Dashboard-first; "AI" bolted on top</div><div class="reframe-arrow">→</div><div class="reframe-to">Clean data first; forecasting once it's earned</div></div>
+      <div class="reframe-row"><div class="reframe-from">Per-market hardware project</div><div class="reframe-arrow">→</div><div class="reframe-to">One platform, priced per market, self-funding</div></div>
+    </div>
+  </section>
+
+  <!-- Architecture: six modules -->
+  <section>
+    <div class="container">
+      <div class="kicker">The solution · architecture</div>
+      <h2 class="section-title" style="font-size:30px">One CRM-led platform, six modules — sequenced so integrity comes before intelligence.</h2>
+      <div class="module-grid">
+        <div class="scard"><span class="tag tag-integrity">1 · Integrity</span><h3>Farmer &amp; Stakeholder CRM</h3><p>Register growers, arthis, traders and buyers. Every consignment ties to a real, attributable identity.</p></div>
+        <div class="scard"><span class="tag tag-integrity">2 · Integrity</span><h3>Net-Weight Capture</h3><p>Two-weighment (loaded in / empty out) with weighbridge auto-feed. Quantity stops being a typed opinion.</p></div>
+        <div class="scard"><span class="tag tag-integrity">3 · Integrity</span><h3>Integrity Ledger</h3><p>Dual-control entry, append-only audit trail and anomaly flags on operator inputs. Manipulation is deterred.</p></div>
+        <div class="scard"><span class="tag tag-trust">4 · Trust</span><h3>Transparent Price Discovery</h3><p>Live e-auction with the clearing price pushed to the farmer in Urdu, before they commit to a sale.</p></div>
+        <div class="scard"><span class="tag tag-trust">5 · Trust</span><h3>Fee Recovery &amp; Reconciliation</h3><p>Market fees computed automatically from verified weights, closing the recovery leakage PAMRA worries about.</p></div>
+        <div class="scard"><span class="tag tag-intel">6 · Intelligence</span><h3>Forecasting (earned)</h3><p>Surplus / deficit and import-trigger models — switched on only once modules 1–3 produce clean data.</p></div>
+      </div>
+      <p style="margin-top:18px;color:var(--slate-700);font-size:14px"><strong>Cloud-prohibited by design:</strong> the platform runs on PAMRA-owned, on-premise infrastructure — no commodity data leaves the department's control.</p>
+    </div>
+  </section>
+
+  <!-- Live integrity ledger demo (kept from the working prototype) -->
+  <section class="alt">
+    <div class="container">
+      <div class="platform-feature">
+        <div style="position:relative;z-index:1">
+          <div class="label">Module 3 · Integrity Ledger — live</div>
+          <h2>The number, independently verified.</h2>
+          <p>The working prototype runs every record through a four-layer authenticity engine — cross-source validation, statistical anomaly detection, geo/staff verification and fraud scoring — writing each verdict to an append-only ledger. Tampering is flagged in real time and tied to a named user.</p>
+          <ul>
+            <li>Dual-control entry — no single operator owns the number</li>
+            <li>Append-only audit trail — every figure traces to a person and timestamp</li>
+            <li>Anomaly flags on price drift, ghost arrivals and volume outliers</li>
+          </ul>
+          <a href="/dashboard" class="btn-primary">Open live dashboard</a>
+          <a href="/ledger" style="color:white;margin-left:14px;font-weight:600;font-size:13px">View the Integrity Ledger →</a>
+        </div>
+        <div class="visual">
+          <div style="color:var(--gold);font-weight:700;margin-bottom:8px;font-size:11px;letter-spacing:1px">LIVE FEED · ALL SOURCES</div>
+          <div class="row"><span>FSD-2234 · WHEAT</span><span class="status">✓ verified</span></div>
+          <div class="row"><span>LHR-8821 · RICE</span><span class="status">✓ verified</span></div>
+          <div class="row"><span>MUL-5519 · COTTON</span><span class="status flagged">⚠ price drift</span></div>
+          <div class="row"><span>SLK-1102 · POTATO</span><span class="status">✓ verified</span></div>
+          <div class="row"><span>UNK-9923 · TOMATO</span><span class="status bad">✗ unregistered</span></div>
+          <div class="row"><span>GUJ-4408 · MAIZE</span><span class="status">✓ verified</span></div>
+          <div class="row"><span>BWP-7770 · ONION</span><span class="status">✓ verified</span></div>
+          <div class="row"><span>RWP-2298 · SUGARCANE</span><span class="status flagged">⚠ volume</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it closes the loop -->
+  <section>
+    <div class="container">
+      <div class="kicker">How it closes the loop</div>
+      <h2 class="section-title" style="font-size:30px">Every problem maps to a specific mechanism and a measurable outcome.</h2>
+      <table class="loop">
+        <thead><tr><th>The problem</th><th>The mechanism</th><th>The outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Arthi sets the farm-gate price</td><td>Farmer CRM + live price to grower + open buyer registry</td><td class="out">Grower sells against a known rate and reaches more buyers</td></tr>
+          <tr><td>Truck weight is a single typed number</td><td>Two-weighment net weight with weighbridge auto-capture</td><td class="out">Quantity is physically measured, not declared</td></tr>
+          <tr><td>Operators are paid to mis-record</td><td>Dual-control entry, immutable log, anomaly detection</td><td class="out">Tampering is flagged live and tied to a named user</td></tr>
+          <tr><td>Data too dirty to forecast</td><td>Clean, attributable, timely records from modules 1–3</td><td class="out">Surplus / deficit &amp; import signals PAMRA can act on</td></tr>
+          <tr><td>Market fees leak</td><td>Auto-reconciled fees from verified weights</td><td class="out">Higher fee recovery — the revenue that funds the platform</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Sequenced delivery -->
+  <section class="alt">
+    <div class="container">
+      <div class="kicker">Sequenced delivery</div>
+      <h2 class="section-title" style="font-size:30px">Land on integrity, expand on trust — and let recovered fees pay for it.</h2>
+      <div class="phase-grid">
+        <div class="phase"><div class="p">P0</div><div class="when">Weeks 1–8</div><h4>Integrity pilot</h4><p>One market (Kahna). Two-weighment, dual-control entry, QR consignment. Prove the leak closes.</p></div>
+        <div class="phase"><div class="p">P1</div><div class="when">Month 3–5</div><h4>Farmer CRM + transparency</h4><p>Register growers; push live prices in Urdu. The arthi loses its information monopoly.</p></div>
+        <div class="phase"><div class="p">P2</div><div class="when">Month 5–8</div><h4>Fee recovery engine</h4><p>Auto-reconcile market fees from verified weights. The platform starts paying for itself.</p></div>
+        <div class="phase"><div class="p">P3</div><div class="when">Month 8–12</div><h4>Forecasting on clean data</h4><p>Switch on surplus / deficit &amp; import-trigger models, now that inputs are trustworthy.</p></div>
+        <div class="phase"><div class="p">P4</div><div class="when">Year 2</div><h4>Province scale-out</h4><p>Roll the proven template across markets as configuration, not new hardware.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The funding loop -->
+  <section class="dark">
+    <div class="container">
+      <div class="kicker" style="color:var(--gold)">The funding loop</div>
+      <h2 class="section-title" style="color:white;font-size:28px">Recovered fees pay for the rollout.</h2>
+      <div class="funnel">
+        <div class="step"><div class="n">1</div><div class="t">Verified weights close the fee-recovery leak</div></div>
+        <div class="step"><div class="n">2</div><div class="t">Recovered market fees create a new PAMRA revenue line</div></div>
+        <div class="step"><div class="n">3</div><div class="t">That revenue funds rollout &amp; run cost</div></div>
+        <div class="step"><div class="n">4</div><div class="t">The platform scales without a fresh capital ask</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live price ticker preview (Transparent Price Discovery, in action) -->
+  <section>
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px">
+        <div>
+          <h2 class="section-title" style="margin:0">Today's commodity prices</h2>
+          <p style="color:var(--slate-500);margin:4px 0 0;font-size:14px">Transparent price discovery in action — live from PAMRA markets across Punjab.</p>
+        </div>
+        <a href="/prices" class="btn-green">All prices →</a>
+      </div>
+      <div id="price-preview"></div>
+    </div>
+  </section>
+
+  <!-- The ask -->
+  <section class="alt">
+    <div class="container" style="text-align:center">
+      <div class="kicker">The ask</div>
+      <h2 class="section-title center" style="font-size:30px">Start with one market and a number we can prove.</h2>
+      <p class="section-lead">A focused 6–8 week integrity diagnostic and single-market pilot — a measurable drop in quantity leakage and a verifiable net-weight record before any province-wide commitment. Digitisation records the market. Integrity changes it.</p>
+      <a href="/patmn" class="btn-primary">Read the PATMN vision</a>
+      <a href="/contact" class="btn-secondary" style="margin-left:8px">Request a pilot</a>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>
+    SitePublic.render('home');
+
+    // Load price preview (8 highlights) — Transparent Price Discovery demo
+    SitePublic.fetchJson('/api/public/prices').then(prices => {
+      const featured = [];
+      const seen = new Set();
+      prices.forEach(p => {
+        if (!seen.has(p.commodity) && p.market_name === 'Lahore') {
+          seen.add(p.commodity);
+          featured.push(p);
+        }
+      });
+      document.getElementById('price-preview').innerHTML = `
+        <table class="public">
+          <thead><tr><th>Commodity</th><th>Market</th><th>Modal price</th><th>Min</th><th>Max</th><th>Change</th></tr></thead>
+          <tbody>
+            ${featured.slice(0, 8).map(p => `
+              <tr>
+                <td><strong>${p.commodity}</strong></td>
+                <td>${p.market_name}</td>
+                <td>Rs ${p.modal_pkr}/kg</td>
+                <td style="color:var(--slate-500)">Rs ${p.min_pkr}</td>
+                <td style="color:var(--slate-500)">Rs ${p.max_pkr}</td>
+                <td><span class="${p.change_pct >= 0 ? 'change-up' : 'change-down'}">${p.change_pct >= 0 ? '▲' : '▼'} ${Math.abs(p.change_pct).toFixed(1)}%</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }).catch(() => {});
+  </script>
+</body>
+</html>

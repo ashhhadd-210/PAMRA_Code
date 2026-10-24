@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Administration</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
+    .health-item { padding: 12px; background: var(--slate-50); border-radius: 6px; }
+    .health-item .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--slate-500); }
+    .health-item .value { font-size: 18px; font-weight: 700; margin-top: 4px; }
+    .adapter-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--slate-100); font-size: 13px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <h1>Administration</h1>
+    <p class="subtitle">User management, registered traders, system health, and adapter status. Admin-only.</p>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><h2>System health</h2><span class="hint" id="uptime"></span></div>
+      <div class="health-grid" id="health"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><h2>Adapter status</h2><span class="hint">Unified Data Bus inputs</span></div>
+      <div id="adapters"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><h2>Staff accounts</h2></div>
+        <div id="users"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Registered traders</h2><span class="hint">NADRA-linked</span></div>
+        <div id="traders"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('admin');
+
+      if (me.user.role !== 'admin') {
+        document.querySelector('main').innerHTML = '<div class="card" style="padding:40px;text-align:center"><h2>Access denied</h2><p style="color:var(--slate-500)">Only administrators can view this page.</p><a href="/portal" class="btn" style="display:inline-block;margin-top:12px;text-decoration:none">Back to portal</a></div>';
+        return;
+      }
+
+      const [health, users, traders] = await Promise.all([
+        PAMRA.api('/api/admin/system-health'),
+        PAMRA.api('/api/admin/users'),
+        PAMRA.api('/api/admin/traders')
+      ]);
+
+      document.getElementById('uptime').textContent = `Uptime: ${formatUptime(health.uptime_seconds)}`;
+      document.getElementById('health').innerHTML = `
+        <div class="health-item" data-help="Resident memory used by the platform process. Rising memory may indicate a leak."><div class="label">Memory used</div><div class="value">${health.memory_mb} MB</div></div>
+        <div class="health-item" data-help="In-memory cache of recently evaluated records (most recent 500). Persistent storage is in PostgreSQL."><div class="label">Record store</div><div class="value">${health.record_store_size.toLocaleString()}</div></div>
+        <div class="health-item" data-help="Trucks currently somewhere in the 8-stage gate flow."><div class="label">Active trucks</div><div class="value">${health.active_trucks}</div></div>
+        <div class="health-item" data-help="Connected real-time clients (dashboard / gate page open in a browser)."><div class="label">WebSocket clients</div><div class="value">${health.ws_clients}</div></div>
+      `;
+
+      const adapterPurpose = {
+        MCMIS:     'Pulls staff, finance, and infrastructure records from the legacy MCMIS database.',
+        AMIS:      'Pulls daily price publications from amis.pk into the unified data bus.',
+        MANDI_APP: 'Pulls live auction records from the Mandi Auction App (mandiauction.punjab.gov.pk).',
+        GATE_AUTO: 'Pulls system-generated arrival records from the AI gate automation pipeline.'
+      };
+      document.getElementById('adapters').innerHTML = health.adapters.map(a => `
+        <div class="adapter-row">
+          <div><strong data-help="${adapterPurpose[a.source] || 'PAMRA source adapter.'}">${a.source}</strong><div style="font-size:11px;color:var(--slate-500)">last sync ${a.last_sync}</div></div>
+          <span class="badge ${a.status === 'healthy' ? 'green' : 'red'}" data-help="Adapter health. 'healthy' means recent successful sync.">${a.status}</span>
+          <button class="btn ghost" data-help="Force the adapter to pull fresh data from its source system right now. Use after fixing a connectivity issue." onclick="alert('Force-resync ${a.source}: triggered. In production this calls the adapter\\'s /sync-now endpoint.')">Resync</button>
+        </div>
+      `).join('');
+
+      document.getElementById('users').innerHTML = `
+        <table class="dt">
+          <thead><tr><th>Username</th><th>Name</th><th>Title</th><th>Role</th></tr></thead>
+          <tbody>
+            ${users.map(u => `<tr><td><strong>${u.username}</strong></td><td>${u.name}</td><td style="color:var(--slate-500)">${u.title}</td><td><span class="badge slate">${u.role}</span></td></tr>`).join('')}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('traders').innerHTML = `
+        <table class="dt">
+          <thead><tr><th>CNIC</th><th>Name</th><th>Village</th><th>Vehicles</th></tr></thead>
+          <tbody>
+            ${traders.map(t => `<tr><td style="font-family:monospace;font-size:11px">${t.cnic}</td><td>${t.name}</td><td style="color:var(--slate-500)">${t.village}</td><td>${t.vehicles.map(v => `<span class="badge slate" style="margin-right:2px">${v}</span>`).join('')}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      `;
+    })();
+
+    function formatUptime(s) {
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return h ? `${h}h ${m}m` : m ? `${m}m ${sec}s` : `${sec}s`;
+    }
+  </script>
+</body>
+</html>

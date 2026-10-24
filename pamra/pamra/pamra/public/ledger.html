@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Integrity Ledger</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .ledger-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .stat-tile { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); border-top: 4px solid var(--green-700); }
+    .stat-tile .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--slate-500); font-weight: 700; }
+    .stat-tile .value { font-size: 24px; font-weight: 800; color: var(--slate-900); margin-top: 4px; }
+    .stat-tile .sub { font-size: 11px; color: var(--slate-500); margin-top: 2px; font-family: "SF Mono", Monaco, monospace; }
+    .stat-tile.status { border-top-color: var(--green-600); }
+    .stat-tile.status.broken { border-top-color: var(--red); }
+
+    .chain-badge { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 16px; }
+    .chain-badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green-600); box-shadow: 0 0 8px rgba(74,222,128,0.6); }
+    .chain-badge.ok { color: var(--green-700); }
+    .chain-badge.broken { color: var(--red); }
+    .chain-badge.broken .dot { background: var(--red); box-shadow: 0 0 8px rgba(248,113,113,0.6); }
+
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+    .toolbar button {
+      padding: 9px 16px; border-radius: 8px; border: 1px solid var(--slate-200);
+      background: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .toolbar button:hover { box-shadow: var(--shadow-sm); }
+    .toolbar button.primary { background: var(--green-700); color: white; border-color: var(--green-700); }
+    .toolbar button.danger { background: white; color: var(--red); border-color: var(--red); }
+    .toolbar button.danger:hover { background: var(--red-50); }
+    .toolbar select { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--slate-200); font-size: 13px; }
+    .toolbar .spacer { flex: 1; }
+    .toolbar .note { font-size: 11px; color: var(--slate-500); max-width: 320px; }
+
+    .result-banner { border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; font-size: 13px; display: none; }
+    .result-banner.show { display: block; }
+    .result-banner.ok { background: var(--green-50); border: 1px solid var(--green-100); color: var(--green-800); }
+    .result-banner.alert { background: var(--red-50); border: 1px solid #fecaca; color: var(--red); }
+    .result-banner h4 { margin: 0 0 6px; font-size: 14px; }
+    .result-banner .mono { font-family: "SF Mono", Monaco, monospace; font-size: 11px; word-break: break-all; }
+    .result-banner table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+    .result-banner td { padding: 3px 8px; }
+    .result-banner td:first-child { color: var(--slate-500); white-space: nowrap; }
+
+    .chain { display: flex; flex-direction: column; gap: 0; }
+    .block {
+      background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      padding: 14px 16px; border-left: 4px solid var(--green-600); position: relative;
+    }
+    .block.flagged { border-left-color: var(--red); background: var(--red-50); }
+    .block.fresh { animation: pop 0.6s ease; }
+    @keyframes pop { 0% { transform: scale(0.97); box-shadow: 0 0 0 4px rgba(46,161,85,0.25); } 100% { transform: scale(1); } }
+    .link-arrow { text-align: center; color: var(--slate-300); font-size: 16px; line-height: 1; padding: 2px 0; }
+    .link-arrow.flagged { color: var(--red); font-weight: 700; }
+
+    .block-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .block-seq { font-weight: 800; color: var(--green-800); font-size: 15px; }
+    .sealed-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--green-700); background: var(--green-50); padding: 3px 9px; border-radius: 999px; }
+    .block.flagged .sealed-badge { color: var(--red); background: white; }
+
+    .block-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px 16px; }
+    .field .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-400); }
+    .field .v { font-size: 13px; font-weight: 600; color: var(--slate-900); }
+    .field .v.plate { font-family: "SF Mono", Monaco, monospace; }
+    .field .v.net { color: var(--green-700); }
+
+    .hashes { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--slate-200); font-family: "SF Mono", Monaco, monospace; font-size: 10px; color: var(--slate-500); display: grid; gap: 2px; }
+    .hashes .h-row { display: flex; gap: 6px; }
+    .hashes .h-row .k { color: var(--slate-400); width: 70px; flex-shrink: 0; }
+    .hashes .h-row .val { color: var(--slate-700); word-break: break-all; }
+    .hashes .h-row.entry .val { color: var(--green-700); font-weight: 600; }
+
+    .empty { text-align: center; color: var(--slate-400); padding: 40px; font-size: 13px; }
+
+    /* Plain-language explainer */
+    .how { background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 18px 20px; margin-bottom: 18px; }
+    .how h3 { margin: 0 0 14px; font-size: 15px; color: var(--green-800); }
+    .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+    .how-step { display: flex; gap: 12px; align-items: flex-start; }
+    .how-step .n { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--green-50); color: var(--green-700); font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .how-step h4 { margin: 0 0 3px; font-size: 13px; color: var(--slate-900); }
+    .how-step p { margin: 0; font-size: 12px; color: var(--slate-500); line-height: 1.5; }
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--slate-100); font-size: 11.5px; color: var(--slate-500); }
+    .legend b { color: var(--slate-700); font-family: "SF Mono", Monaco, monospace; }
+    .field .v.val { color: var(--green-700); }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <h1 data-help="Every truck the gate captures (plate via ANPR + net weight via weighbridge) is sealed into an append-only, hash-chained ledger. Each block's hash is built from the block before it, so any later edit breaks the chain and is detected.">Integrity Ledger</h1>
+    <p class="subtitle">The tamper-evidence layer. Sensor-captured truck facts — number plate and net weight — are sealed into an append-only, hash-chained record. There is no edit button: any change to a sealed value breaks the chain and is detected instantly. <em>Manipulation is detected and deterred.</em></p>
+
+    <div class="how">
+      <h3>How the Integrity Ledger works</h3>
+      <div class="how-grid">
+        <div class="how-step"><div class="n">1</div><div><h4>Capture</h4><p>The gate reads the truck's number plate with a camera (ANPR) and weighs it twice for net weight. Nothing is typed by hand.</p></div></div>
+        <div class="how-step"><div class="n">2</div><div><h4>Seal</h4><p>Each truck's facts are locked into a block and stamped with a unique digital fingerprint (a SHA-256 hash).</p></div></div>
+        <div class="how-step"><div class="n">3</div><div><h4>Chain</h4><p>Every block also stores the previous block's fingerprint, linking all blocks together like a chain.</p></div></div>
+        <div class="how-step"><div class="n">4</div><div><h4>Verify</h4><p>Change any sealed value and its fingerprint stops matching, so tampering is detected the instant the chain is checked.</p></div></div>
+      </div>
+      <div class="legend">
+        <span><b>entry_hash</b> &nbsp;this block's fingerprint</span>
+        <span><b>prev_hash</b> &nbsp;the block before it</span>
+        <span><b>co-signed</b> &nbsp;two officers approved it (dual control)</span>
+        <span>No edit or delete exists, by design.</span>
+      </div>
+    </div>
+
+    <div class="ledger-stats" id="stats"></div>
+
+    <div class="toolbar">
+      <button class="primary" id="btn-verify" data-help="Re-walks the entire chain, recomputing every block's hash from scratch, and confirms nothing has been altered since it was sealed.">Verify chain integrity</button>
+      <button class="danger" id="btn-tamper" data-help="Demonstration only: takes a copy of the ledger, secretly alters one sealed value (e.g. shaves 5,000 kg off a net weight), and shows the verifier catching it. The real ledger is never touched.">Simulate tamper attempt</button>
+      <select id="tamper-field" data-help="Which sealed field the simulated attacker tries to change.">
+        <option value="net_kg">shave net weight (−5,000 kg)</option>
+        <option value="plate">swap truck number plate</option>
+        <option value="commodity">change the commodity</option>
+      </select>
+      <div class="spacer"></div>
+      <div class="note">Append-only store · no <code>UPDATE</code>/<code>DELETE</code> endpoint exists by design.</div>
+    </div>
+
+    <div class="result-banner" id="result"></div>
+
+    <div class="chain" id="chain"><div class="empty">Waiting for the first truck to be sealed… (trucks flow through the gate every few seconds)</div></div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script src="/ledger.js"></script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+/* Shared design tokens + header/nav used by every page */
+
+:root {
+  --green-900: #0a2f1a;
+  --green-800: #0f3a1f;
+  --green-700: #186b34;
+  --green-600: #1f8b43;
+  --green-500: #2da155;
+  --green-100: #d4edd9;
+  --green-50: #e8f5ec;
+  --gold-500: #c9a227;
+  --gold-100: #fdf5d3;
+  --amber: #d98c1f;
+  --red: #b8312f;
+  --red-50: #fef2f2;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+  background: var(--slate-50);
+  color: var(--slate-900);
+  min-height: 100vh;
+}
+a { color: var(--green-700); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ─── Top header ─── */
+.pamra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, var(--green-900), var(--green-700));
+  color: white;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.pamra-brand { display: flex; align-items: center; gap: 14px; }
+.pamra-mark {
+  background: white;
+  color: var(--green-900);
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1;
+}
+.pamra-mark span.tag {
+  display: block;
+  font-size: 8px;
+  font-weight: 600;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+  color: var(--green-700);
+}
+.pamra-titles .l1 { font-size: 16px; font-weight: 600; line-height: 1.1; }
+.pamra-titles .l2 { font-size: 11px; opacity: 0.75; }
+
+.pamra-nav { display: flex; gap: 4px; align-items: center; }
+.pamra-nav a {
+  color: rgba(255,255,255,0.85);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.pamra-nav a:hover { background: rgba(255,255,255,0.1); text-decoration: none; color: white; }
+.pamra-nav a.active { background: rgba(255,255,255,0.18); color: white; }
+
+.pamra-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.15);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.pamra-user .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  color: var(--green-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+.pamra-user .name { line-height: 1.2; }
+.pamra-user .role { font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+.pamra-user button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.pamra-user button:hover { background: rgba(255,255,255,0.15); }
+
+/* ─── Generic page chrome ─── */
+.page {
+  padding: 20px 24px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 22px;
+  margin: 0 0 4px;
+  color: var(--slate-900);
+}
+.page .subtitle {
+  color: var(--slate-500);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 16px 6px;
+  border-bottom: 1px solid var(--slate-100);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.card-header h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-700);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.card-header .hint { font-size: 11px; color: var(--slate-500); }
+.card-body { padding: 16px; }
+
+/* ─── KPI tiles ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.kpi {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--green-700);
+}
+.kpi .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--slate-500); }
+.kpi .value { font-size: 26px; font-weight: 700; margin-top: 4px; color: var(--slate-900); }
+.kpi .sub { font-size: 12px; color: var(--slate-500); margin-top: 2px; }
+.kpi.amber { border-left-color: var(--amber); }
+.kpi.red { border-left-color: var(--red); }
+.kpi.gold { border-left-color: var(--gold-500); }
+
+/* ─── Tables ─── */
+table.dt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.dt th, table.dt td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--slate-100);
+}
+table.dt th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--slate-500);
+  font-weight: 600;
+  background: var(--slate-50);
+}
+table.dt tr:hover { background: var(--slate-50); }
+
+/* ─── Pills/badges ─── */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+.badge.green { background: var(--green-100); color: var(--green-700); }
+.badge.amber { background: #fef3c7; color: #92400e; }
+.badge.red   { background: #fee2e2; color: #991b1b; }
+.badge.slate { background: var(--slate-100); color: var(--slate-700); }
+
+/* ─── Buttons ─── */
+button.btn, .btn {
+  background: var(--green-700);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+button.btn:hover { background: var(--green-800); }
+button.btn.ghost { background: white; color: var(--green-700); border: 1px solid var(--slate-200); }
+button.btn.ghost:hover { background: var(--slate-50); }
+button.btn.gold { background: var(--gold-500); color: var(--green-900); }
+
+/* ─── Loader ─── */
+.loader { color: var(--slate-400); font-size: 13px; padding: 20px; text-align: center; }
+
+/* ─── Inline help system (data-help → auto-injected ⓘ + tooltip) ─── */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--gold-500, #c9a227);
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: help;
+  margin: 0 0 0 6px;
+  vertical-align: middle;
+  font-family: -apple-system, sans-serif;
+  user-select: none;
+  flex-shrink: 0;
+  transition: transform 0.15s, background 0.15s;
+}
+.help-icon:hover {
+  background: var(--green-700);
+  transform: scale(1.15);
+}
+.help-icon.pulse {
+  animation: helpPulse 2s ease-in-out 2;
+}
+@keyframes helpPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.6); }
+  50% { box-shadow: 0 0 0 6px rgba(201, 162, 39, 0); }
+}
+#help-tooltip {
+  position: fixed;
+  background: #0f172a;
+  color: white;
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  max-width: 280px;
+  line-height: 1.5;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+#help-tooltip.visible { opacity: 1; }
+#help-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 0; height: 0;
+  border: 6px solid transparent;
+}
+#help-tooltip[data-arrow="up"]::before {
+  top: -12px; left: 14px;
+  border-bottom-color: #0f172a;
+}
+#help-tooltip[data-arrow="down"]::before {
+  bottom: -12px; left: 14px;
+  border-top-color: #0f172a;
+}
+#help-tooltip .help-purpose {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold-500, #c9a227);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* Help mode indicator in the header */
+.help-mode-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--gold-500, #c9a227);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+.help-mode-hint .icon {
+  width: 14px;
+  height: 14px;
+  background: var(--gold-500, #c9a227);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 800;
+}

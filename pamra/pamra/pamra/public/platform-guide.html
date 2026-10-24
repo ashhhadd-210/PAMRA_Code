@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Platform Guide · PAMRA</title>
+  <meta name="description" content="Detailed guidelines and functionality reference for the PAMRA Unified Market Intelligence Platform — modules, roles, authenticity engine, gate automation, data flow." />
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .guide-layout { display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: start; }
+    .toc { position: sticky; top: 90px; background: white; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm); font-size: 13px; }
+    .toc h4 { margin: 0 0 10px; color: var(--pk-green); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin-bottom: 4px; }
+    .toc a { color: var(--slate-700); display: block; padding: 5px 8px; border-radius: 4px; }
+    .toc a:hover { background: var(--green-bg); color: var(--pk-green); text-decoration: none; }
+    .toc a.active { background: var(--green-bg); color: var(--pk-green); font-weight: 600; }
+
+    .guide-body section.subsection { padding: 36px 0; border-bottom: 1px solid var(--slate-100); scroll-margin-top: 80px; }
+    .guide-body section.subsection:last-child { border: none; }
+    .guide-body h2 { color: var(--pk-green); font-size: 24px; margin: 0 0 6px; }
+    .guide-body .purpose-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
+    .guide-body p { color: var(--slate-700); font-size: 14px; line-height: 1.65; }
+    .guide-body h3 { color: var(--slate-900); font-size: 16px; margin: 24px 0 10px; }
+    .guide-body ul, .guide-body ol { color: var(--slate-700); font-size: 14px; line-height: 1.7; padding-left: 22px; }
+
+    .purpose-callout {
+      background: var(--gold-light);
+      border-left: 4px solid var(--gold);
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin: 16px 0 20px;
+    }
+    .purpose-callout .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); font-weight: 800; }
+    .purpose-callout p { margin: 4px 0 0; font-size: 14px; color: var(--slate-900); }
+
+    .role-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 16px 0;
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .role-table th, .role-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--slate-100); }
+    .role-table th { background: var(--pk-green); color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .role-table .yes { color: var(--pk-green); font-weight: 700; text-align: center; }
+    .role-table .no { color: var(--slate-400); text-align: center; }
+
+    .module-card {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin: 20px 0;
+      border-top: 4px solid var(--pk-green);
+    }
+    .module-card.gate { border-top-color: var(--gold); }
+    .module-card h3 { margin: 0 0 8px; font-size: 18px; color: var(--pk-green); }
+    .module-card .icon-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .module-card .icon {
+      width: 48px; height: 48px;
+      background: var(--green-bg);
+      color: var(--pk-green);
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .module-card.gate .icon { background: var(--gold-light); color: var(--gold); }
+
+    .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+    .feature-list .feat { background: var(--slate-50); padding: 14px; border-radius: 6px; }
+    .feature-list .feat h4 { margin: 0 0 4px; font-size: 13px; color: var(--pk-green); }
+    .feature-list .feat p { margin: 0; font-size: 12px; color: var(--slate-700); }
+
+    .step-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 18px 0; }
+    .step-flow .step {
+      background: white;
+      padding: 14px;
+      border-radius: 6px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      position: relative;
+      border-top: 3px solid var(--pk-green);
+    }
+    .step-flow .step .n { color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+    .step-flow .step h4 { margin: 6px 0 4px; font-size: 13px; color: var(--slate-900); }
+    .step-flow .step p { font-size: 11px; color: var(--slate-500); margin: 0; }
+
+    .layer-detail {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 18px;
+      align-items: start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .layer-detail .layer-num {
+      background: var(--pk-green);
+      color: white;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .layer-detail h4 { margin: 0 0 4px; color: var(--pk-green); font-size: 16px; }
+    .layer-detail .catches {
+      background: var(--green-bg);
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--slate-700);
+    }
+    .layer-detail .catches strong { color: var(--pk-green); }
+
+    .faq-item {
+      background: white;
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .faq-item summary { font-weight: 600; color: var(--pk-green); cursor: pointer; font-size: 14px; }
+    .faq-item summary::marker { color: var(--gold); }
+    .faq-item p { margin: 12px 0 0; font-size: 13px; color: var(--slate-700); }
+
+    @media (max-width: 900px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .toc { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · <a href="/services">Services</a> · Platform Guide</div>
+      <h1 data-i18n="hero_guide">Platform Guide</h1>
+      <p class="lead" data-i18n="hero_guide_l">A detailed reference for the purpose and functionality of every part of the Unified Market Intelligence Platform — modules, roles, the authenticity engine, gate automation, and data flow.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="toc">
+          <h4>On this page</h4>
+          <ul>
+            <li><a href="#overview">1. Overview &amp; Purpose</a></li>
+            <li><a href="#architecture">2. Architecture</a></li>
+            <li><a href="#access">3. Access &amp; Sign in</a></li>
+            <li><a href="#roles">4. Roles &amp; Permissions</a></li>
+            <li><a href="#modules">5. Modules</a></li>
+            <li><a href="#engine">6. Authenticity Engine</a></li>
+            <li><a href="#gate">7. Gate Automation</a></li>
+            <li><a href="#data-flow">8. Data Flow</a></li>
+            <li><a href="#options">9. Options &amp; Settings</a></li>
+            <li><a href="#guidelines">10. Operational Guidelines</a></li>
+            <li><a href="#faq">11. FAQ</a></li>
+            <li><a href="#glossary">12. Glossary</a></li>
+          </ul>
+        </aside>
+
+        <div class="guide-body">
+
+          <!-- 1. OVERVIEW -->
+          <section class="subsection" id="overview">
+            <div class="purpose-label">Section 1</div>
+            <h2>Overview &amp; Purpose</h2>
+            <p>The <strong>Unified Market Intelligence Platform</strong> is PAMRA's central digital system. It integrates three previously fragmented systems — <strong>MCMIS</strong>, <strong>AMIS</strong>, and the <strong>Mandi Auction App</strong> — into a single source of truth, then verifies every record through a four-layer authenticity engine before publication.</p>
+
+            <div class="purpose-callout">
+              <div class="lbl">Purpose</div>
+              <p>To eliminate data fragmentation, detect manipulation in real time, and give PAMRA leadership the trusted, integrated view needed for evidence-based agricultural policy in Punjab.</p>
+            </div>
+
+            <h3>What the platform does</h3>
+            <ul>
+              <li><strong>Integrates</strong> staff records (MCMIS), commodity prices (AMIS), and live auctions (Mandi App) into one canonical data model.</li>
+              <li><strong>Captures</strong> data automatically at mandi gates via ANPR cameras, CNIC kiosks, weighbridges, and commodity classifiers — no manual entry.</li>
+              <li><strong>Verifies</strong> every incoming record through four independent checks before publication.</li>
+              <li><strong>Quarantines</strong> suspicious entries (price manipulation, ghost arrivals, geofence violations) for human review.</li>
+              <li><strong>Surfaces</strong> live dashboards, alerts, and analytics for inspectors, committees and HQ.</li>
+              <li><strong>Exports</strong> scheduled reports to leadership and regulatory bodies.</li>
+            </ul>
+          </section>
+
+          <!-- 2. ARCHITECTURE -->
+          <section class="subsection" id="architecture">
+            <div class="purpose-label">Section 2</div>
+            <h2>Architecture</h2>
+            <p>The platform is built in four logical layers. Legacy systems continue to operate; the platform sits above them, normalizing their data and exposing a unified interface.</p>
+
+            <div class="step-flow">
+              <div class="step"><div class="n">LAYER A</div><h4>Source systems</h4><p>MCMIS · AMIS · Mandi App · Gate sensors</p></div>
+              <div class="step"><div class="n">LAYER B</div><h4>Adapters</h4><p>Per-source connectors that normalize records to canonical schema</p></div>
+              <div class="step"><div class="n">LAYER C</div><h4>Data Bus</h4><p>Single stream all downstream services subscribe to</p></div>
+              <div class="step"><div class="n">LAYER D</div><h4>Authenticity Engine</h4><p>4-layer verification before publication</p></div>
+              <div class="step"><div class="n">LAYER E</div><h4>Modules &amp; Dashboards</h4><p>What end users see</p></div>
+            </div>
+
+            <h3>Canonical record schema</h3>
+            <p>Every record — regardless of source — is normalized to a single shape with required fields: <code>record_id</code>, <code>source</code>, <code>market_id</code>, <code>commodity</code>, <code>lot_volume_kg</code>, <code>price_per_kg</code>, <code>auction_timestamp</code>, <code>staff_id</code>, <code>geo</code>, <code>external_ref</code>. This makes cross-source comparison possible.</p>
+          </section>
+
+          <!-- 3. ACCESS -->
+          <section class="subsection" id="access">
+            <div class="purpose-label">Section 3</div>
+            <h2>Access &amp; Sign in</h2>
+            <div class="purpose-callout">
+              <div class="lbl">Purpose</div>
+              <p>Restrict the platform to authorized PAMRA staff. Trader information is stored and used internally, but traders do not sign in — they are recognized at the gate by ANPR and CNIC scanning.</p>
+            </div>
+
+            <h3>Who can sign in</h3>
+            <ul>
+              <li><strong>PAMRA staff</strong> with an issued username and password (admin, inspector, analyst, committee secretary).</li>
+              <li><strong>No public login</strong> for farmers or traders — they interact with PAMRA through public services (prices, market directory, helpline) and via physical gate operations.</li>
+            </ul>
+
+            <h3>How to sign in</h3>
+            <ol>
+              <li>Click <strong>Platform Login</strong> in the top-right of any public PAMRA page (or visit <code>/login</code>).</li>
+              <li>Enter your PAMRA-issued username and password.</li>
+              <li>The system issues a 24-hour session token. You'll land on the portal showing only modules your role can access.</li>
+              <li>Sign out from the top-right of any page to revoke your token immediately.</li>
+            </ol>
+
+            <h3>Forgot password?</h3>
+            <p>Contact your PAMRA administrator. Passwords are managed centrally; there is no self-service reset.</p>
+          </section>
+
+          <!-- 4. ROLES -->
+          <section class="subsection" id="roles">
+            <div class="purpose-label">Section 4</div>
+            <h2>Roles &amp; Permissions</h2>
+            <p>The platform uses role-based access control. Each user is assigned exactly one role, which determines which modules they see in the portal and which API actions they can perform.</p>
+
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>Module / Action</th>
+                  <th>Admin</th>
+                  <th>Inspector</th>
+                  <th>Analyst</th>
+                  <th>Committee</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Market Intelligence (dashboard)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                <tr><td>Gate Automation</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+                <tr><td>MCMIS (staff, finances, infra)</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td></tr>
+                <tr><td>AMIS (price history)</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td></tr>
+                <tr><td>Reports &amp; Analytics</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                <tr><td>Administration (users, system)</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+                <tr><td>View trader registry</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+                <tr><td>Quarantine review &amp; override</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Role purposes</h3>
+            <ul>
+              <li><strong>Admin</strong> — Director-level access; user management, system health, all data, full override authority.</li>
+              <li><strong>Inspector</strong> — Field operations; gate monitoring, market visits, quarantine review for their markets.</li>
+              <li><strong>Analyst</strong> — HQ data analysis; price trends, forecasting, policy reports. No operational access.</li>
+              <li><strong>Committee</strong> — Market committee secretary; manages staff attendance, finances, infrastructure issues for their market.</li>
+            </ul>
+          </section>
+
+          <!-- 5. MODULES -->
+          <section class="subsection" id="modules">
+            <div class="purpose-label">Section 5</div>
+            <h2>Modules</h2>
+            <p>The platform exposes six modules, each addressing a specific operational need.</p>
+
+            <!-- Market Intelligence -->
+            <div class="module-card">
+              <div class="icon-row">
+                <div class="icon">MI</div>
+                <div>
+                  <h3 style="margin:0">Market Intelligence</h3>
+                  <div style="color:var(--slate-500);font-size:12px">live commodity flows · authenticity engine · anomaly alerts</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Give a single live view of every auction across every PAMRA market, with anomalies flagged in real time. Replaces the need to log into MCMIS, AMIS, and Mandi App separately.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>Live Punjab map</h4><p>Markets as pins; pin size and color reflect record volume and anomaly density.</p></div>
+                <div class="feat"><h4>Record stream</h4><p>Every incoming record from all four sources, filterable by disposition.</p></div>
+                <div class="feat"><h4>Layer statistics</h4><p>How many records each authenticity layer is catching, updated live.</p></div>
+                <div class="feat"><h4>Audit drawer</h4><p>For any flagged record, see exactly which layer caught it and why.</p></div>
+              </div>
+            </div>
+
+            <!-- Gate Automation -->
+            <div class="module-card gate">
+              <div class="icon-row">
+                <div class="icon">GA</div>
+                <div>
+                  <h3 style="margin:0">Gate Automation</h3>
+                  <div style="color:var(--slate-500);font-size:12px">AI cameras · CNIC kiosks · weighbridges · commodity classifier</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Capture every truck entering and leaving the mandi automatically — no manual paperwork, no missing records, no fake transactions. Each captured truck becomes a verified arrival record in the data bus.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>ANPR plate scan</h4><p>Camera reads truck plate, cross-checks against registered vehicles registry.</p></div>
+                <div class="feat"><h4>CNIC verification</h4><p>Driver presents CNIC; verified against NADRA-linked PAMRA trader registry.</p></div>
+                <div class="feat"><h4>Commodity classifier</h4><p>Overhead camera identifies the produce; flags mismatch with declared commodity.</p></div>
+                <div class="feat"><h4>Weighbridge</h4><p>Gross-in and tare-out captured by load cells; net auto-computed.</p></div>
+                <div class="feat"><h4>Live stage flow</h4><p>Visual indicator of every truck's current stage across all 8 gate stations.</p></div>
+                <div class="feat"><h4>Auto-record creation</h4><p>On exit, a complete arrival record is generated and fed into the engine.</p></div>
+              </div>
+            </div>
+
+            <!-- MCMIS -->
+            <div class="module-card">
+              <div class="icon-row">
+                <div class="icon">MC</div>
+                <div>
+                  <h3 style="margin:0">MCMIS — Market Committee Management</h3>
+                  <div style="color:var(--slate-500);font-size:12px">staff · attendance · finances · infrastructure</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Give market committee secretaries and HQ a single view of staff, money, and physical infrastructure across every PAMRA market — replacing manual ledgers and ad-hoc spreadsheets.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>Staff roster</h4><p>~100 employees with attendance %, position, biometric punch-in time.</p></div>
+                <div class="feat"><h4>Market finances</h4><p>Revenue, expenses, fee collection rate, pending dues per market.</p></div>
+                <div class="feat"><h4>Infrastructure tracker</h4><p>Open / in-progress / resolved issues with severity.</p></div>
+                <div class="feat"><h4>Market filter</h4><p>Drill into a single market's staff, money, or issues.</p></div>
+              </div>
+            </div>
+
+            <!-- AMIS -->
+            <div class="module-card">
+              <div class="icon-row">
+                <div class="icon">AM</div>
+                <div>
+                  <h3 style="margin:0">AMIS — Agricultural Market Information</h3>
+                  <div style="color:var(--slate-500);font-size:12px">daily prices · 30-day trends · leaderboards · arrivals</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Publish accurate commodity prices to protect farmers from undervaluation and give traders/policymakers a reliable basis for decisions.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>Today's prices</h4><p>80+ quotes across 10 markets and 8 commodities — modal, min, max.</p></div>
+                <div class="feat"><h4>30-day chart</h4><p>Price history per (market, commodity) with min-max range shaded.</p></div>
+                <div class="feat"><h4>Leaderboard</h4><p>Which market has the best price for any commodity today.</p></div>
+                <div class="feat"><h4>Arrivals tracking</h4><p>Total tonnage arriving per market — feeds surplus/shortage forecasts.</p></div>
+              </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="module-card">
+              <div class="icon-row">
+                <div class="icon">RP</div>
+                <div>
+                  <h3 style="margin:0">Reports &amp; Analytics</h3>
+                  <div style="color:var(--slate-500);font-size:12px">8 scheduled reports · KPI dashboard · exports</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Produce evidence for regulatory action and policy. Reports are the formal output of all the live data the platform captures.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>Daily activity summary</h4><p>What happened across Punjab in the last 24 hours.</p></div>
+                <div class="feat"><h4>Weekly price trends</h4><p>Movements per commodity, with commentary triggers.</p></div>
+                <div class="feat"><h4>Monthly revenue</h4><p>Fee collection by market vs budget.</p></div>
+                <div class="feat"><h4>Quarantine log</h4><p>Every record the engine rejected, with reasons — for inquiry committees.</p></div>
+              </div>
+            </div>
+
+            <!-- Administration -->
+            <div class="module-card">
+              <div class="icon-row">
+                <div class="icon">AD</div>
+                <div>
+                  <h3 style="margin:0">Administration (admin only)</h3>
+                  <div style="color:var(--slate-500);font-size:12px">users · traders · system health · adapter status</div>
+                </div>
+              </div>
+              <div class="purpose-callout">
+                <div class="lbl">Purpose</div>
+                <p>Operate and maintain the platform itself — accounts, integrations, system health.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feat"><h4>Staff accounts</h4><p>All users with their roles and assigned modules.</p></div>
+                <div class="feat"><h4>Trader registry</h4><p>Read-only NADRA-linked traders with their CNICs and vehicles.</p></div>
+                <div class="feat"><h4>Adapter status</h4><p>Health of each source connector (MCMIS, AMIS, Mandi, Gate) with manual resync.</p></div>
+                <div class="feat"><h4>System metrics</h4><p>Memory, uptime, record count, WebSocket clients, active trucks.</p></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6. AUTHENTICITY ENGINE -->
+          <section class="subsection" id="engine">
+            <div class="purpose-label">Section 6</div>
+            <h2>The Four-Layer Authenticity Engine</h2>
+            <div class="purpose-callout">
+              <div class="lbl">Purpose</div>
+              <p>Stop manipulation, errors, and fraud at the data layer — before bad records reach analytics, dashboards, and policy decisions. Each incoming record passes through four independent checks.</p>
+            </div>
+
+            <div class="layer-detail">
+              <div class="layer-num">1</div>
+              <div>
+                <h4>Cross-source validation</h4>
+                <p>Compare the same auction's record as reported by MCMIS, AMIS, and Mandi App. If prices or volumes disagree by more than tolerance, the record is flagged.</p>
+                <div class="catches"><strong>Catches:</strong> Records that disagree across sources — typical sign of one source being tampered with.</div>
+              </div>
+            </div>
+
+            <div class="layer-detail">
+              <div class="layer-num">2</div>
+              <div>
+                <h4>Statistical anomaly detection</h4>
+                <p>Maintain a 30-day rolling distribution per (market, commodity). Z-score on price (|z|&gt;3 fails); IQR fence on volume. Also tracks entry velocity per staff member.</p>
+                <div class="catches"><strong>Catches:</strong> Impossible prices (10× normal), impossible volumes, fat-finger errors, fake bulk entry by single staff member.</div>
+              </div>
+            </div>
+
+            <div class="layer-detail">
+              <div class="layer-num">3</div>
+              <div>
+                <h4>Geo + staff verification</h4>
+                <p>GPS coordinates of the record must lie within the market's stored geofence. The staff member's ID must appear on the day's biometric attendance roster.</p>
+                <div class="catches"><strong>Catches:</strong> Records submitted from outside the market premises; ghost entries under absent staff.</div>
+              </div>
+            </div>
+
+            <div class="layer-detail">
+              <div class="layer-num">4</div>
+              <div>
+                <h4>ML fraud scoring</h4>
+                <p>A gradient-boosted classifier trained on historical disputed records. Features include price deviation, volume vs staff's history, time of day, entry velocity, and the staff member's prior dispute rate. Outputs a 0–1 confidence score.</p>
+                <div class="catches"><strong>Catches:</strong> Subtle patterns no single rule catches — e.g., a slightly off price, late at night, from a staff member with prior disputes.</div>
+              </div>
+            </div>
+
+            <h3>Combined verdict</h3>
+            <ul>
+              <li><strong>CLEAN</strong> → published to analytics and dashboards normally.</li>
+              <li><strong>SUSPECT</strong> → published but visibly flagged; appears in review queue.</li>
+              <li><strong>QUARANTINED</strong> → withheld from analytics; requires inspector/admin approval before release.</li>
+            </ul>
+            <p>The threshold for quarantine is: any layer fails, OR fraud score &gt; 0.70. Suspect: any layer warns, OR fraud score &gt; 0.40.</p>
+          </section>
+
+          <!-- 7. GATE -->
+          <section class="subsection" id="gate">
+            <div class="purpose-label">Section 7</div>
+            <h2>Gate Automation Flow</h2>
+            <div class="purpose-callout">
+              <div class="lbl">Purpose</div>
+              <p>Eliminate the gap between a truck's physical movement through the mandi and the digital record of that movement — automating capture so nothing is missed and nothing can be fabricated.</p>
+            </div>
+
+            <p>Each truck moves through 8 stages, with automatic capture at each station:</p>
+            <ol>
+              <li><strong>APPROACHING</strong> — truck enters the queue. No active capture yet.</li>
+              <li><strong>ANPR_SCANNING</strong> — front camera reads the number plate. OCR confidence and registry match recorded.</li>
+              <li><strong>CNIC_KIOSK</strong> — driver presents CNIC at the kiosk. Verified against NADRA-style registry and against the plate-to-CNIC linkage.</li>
+              <li><strong>COMMODITY_SCAN</strong> — overhead camera classifies the produce in the truck bed; flagged if it doesn't match what was declared.</li>
+              <li><strong>WEIGHBRIDGE_IN</strong> — gross-in weight captured by load cell. Compared against declared volume.</li>
+              <li><strong>AUCTION</strong> — truck heads to the auction floor and unloads.</li>
+              <li><strong>WEIGHBRIDGE_OUT</strong> — tare-out weight after unloading. Net = gross − tare = produce actually sold.</li>
+              <li><strong>EXITED</strong> — a canonical arrival record is auto-generated and pushed into the authenticity engine.</li>
+            </ol>
+
+            <h3>What gets flagged at the gate</h3>
+            <ul>
+              <li>Plate not in the registered vehicles list → manual review required.</li>
+              <li>CNIC not in trader registry → driver verification needed.</li>
+              <li>CNIC and plate registered, but not to each other → identity mismatch.</li>
+              <li>Camera-classified commodity differs from what driver declared → physical inspection.</li>
+              <li>Gross weight differs &gt;30% from declared load → re-weigh.</li>
+            </ul>
+          </section>
+
+          <!-- 8. DATA FLOW -->
+          <section class="subsection" id="data-flow">
+            <div class="purpose-label">Section 8</div>
+            <h2>Data Flow</h2>
+            <p>Every record — whether it originates from a manual entry in MCMIS, a price publication in AMIS, a live auction in Mandi App, or a gate sensor — follows the same path:</p>
+
+            <ol>
+              <li><strong>Capture</strong> — source system or gate sensor produces a raw record.</li>
+              <li><strong>Normalize</strong> — adapter maps the raw record into the canonical schema, attaches source tag.</li>
+              <li><strong>Publish</strong> — adapter writes the canonical record to the Data Bus.</li>
+              <li><strong>Verify</strong> — Authenticity Engine subscribes and runs all four layers on the record.</li>
+              <li><strong>Disposition</strong> — record is tagged CLEAN, SUSPECT, or QUARANTINED.</li>
+              <li><strong>Distribute</strong> — CLEAN goes to dashboards, analytics, reports; SUSPECT also distributed but visibly flagged; QUARANTINED held in review queue.</li>
+              <li><strong>Audit log</strong> — every step is recorded in a tamper-evident append-only log.</li>
+            </ol>
+          </section>
+
+          <!-- 9. OPTIONS / SETTINGS -->
+          <section class="subsection" id="options">
+            <div class="purpose-label">Section 9</div>
+            <h2>Options &amp; Configurable Settings</h2>
+            <p>The platform exposes the following options for HQ administrators to tune its behaviour over time:</p>
+
+            <h3>Authenticity engine</h3>
+            <ul>
+              <li><strong>Cross-source tolerance</strong> — price disagreement % above which records warn (default 8%) or fail (default 20%).</li>
+              <li><strong>Statistical window</strong> — rolling-window size for Z-score and IQR (default 30 days).</li>
+              <li><strong>Fraud-score thresholds</strong> — boundaries for SUSPECT (default 0.40) and QUARANTINED (default 0.70) dispositions.</li>
+              <li><strong>Per-commodity overrides</strong> — perishables get wider tolerance than staples.</li>
+            </ul>
+
+            <h3>Gate automation</h3>
+            <ul>
+              <li><strong>Geofence radius</strong> per market (default 5 km).</li>
+              <li><strong>ANPR confidence threshold</strong> below which manual review is triggered.</li>
+              <li><strong>CNIC OCR + face match minimum confidence</strong>.</li>
+              <li><strong>Weight variance threshold</strong> vs declared.</li>
+            </ul>
+
+            <h3>Reports</h3>
+            <ul>
+              <li><strong>Schedule</strong> — daily / weekly / monthly cadence.</li>
+              <li><strong>Recipients</strong> — email lists per report.</li>
+              <li><strong>Format</strong> — PDF, XLSX, CSV.</li>
+            </ul>
+
+            <h3>Notifications</h3>
+            <ul>
+              <li><strong>Alert channels</strong> — in-app, email, SMS to inspector on quarantine event.</li>
+              <li><strong>Severity routing</strong> — high-severity infrastructure issues go to HQ directly.</li>
+            </ul>
+          </section>
+
+          <!-- 10. GUIDELINES -->
+          <section class="subsection" id="guidelines">
+            <div class="purpose-label">Section 10</div>
+            <h2>Operational Guidelines</h2>
+
+            <h3>For PAMRA HQ administrators</h3>
+            <ul>
+              <li>Review the quarantine queue at least once per business day. Records older than 72 hours without action should be escalated.</li>
+              <li>Audit user account access monthly; deactivate accounts of departed staff immediately.</li>
+              <li>Check adapter status weekly; any "degraded" status requires a manual resync.</li>
+              <li>Validate the fraud-score thresholds quarterly using the new month's disputed-records sample.</li>
+            </ul>
+
+            <h3>For market inspectors</h3>
+            <ul>
+              <li>Confirm gate cameras (ANPR + commodity overhead) are operational at start-of-day. Use the gate UI status indicator.</li>
+              <li>Review every QUARANTINED record from your market within 24 hours. Add a note when approving or rejecting.</li>
+              <li>If you receive a "staff not on duty" flag against your own ID, file an incident ticket — possible credential abuse.</li>
+            </ul>
+
+            <h3>For committee secretaries</h3>
+            <ul>
+              <li>Submit infrastructure issues immediately upon discovery — high-severity issues route to HQ within 1 hour.</li>
+              <li>Ensure biometric punch-in is functional; absent staff cannot legitimately submit records.</li>
+              <li>Review monthly finance reports before the 5th of each month and flag any discrepancies.</li>
+            </ul>
+
+            <h3>For HQ analysts</h3>
+            <ul>
+              <li>Use AMIS chart data for trend reporting — never use raw single-day prices for policy without 7-day smoothing.</li>
+              <li>When drafting a report based on quarantined records, always include the engine's reason field — it's part of the evidence trail.</li>
+              <li>Cross-check forecasts against arrivals data, not just published prices.</li>
+            </ul>
+          </section>
+
+          <!-- 11. FAQ -->
+          <section class="subsection" id="faq">
+            <div class="purpose-label">Section 11</div>
+            <h2>Frequently Asked Questions</h2>
+
+            <details class="faq-item">
+              <summary>Why don't traders log in to the platform?</summary>
+              <p>Traders are recognized at the mandi gate via their registered vehicle's number plate (ANPR) and their CNIC. There is no need for a separate trader login — PAMRA already has their information on file. This simplifies the system and reduces credential-management overhead for citizens. If a trader needs to query their auction history, they can request it via the helpline or in-person at any PAMRA office.</p>
+            </details>
+
+            <details class="faq-item">
+              <summary>What happens to a quarantined record?</summary>
+              <p>It is held out of analytics and dashboards. An inspector or admin must review it in the platform's quarantine queue and either approve (release into the data pool with a note) or reject (mark as confirmed bad and trigger a follow-up action like a show-cause notice). Every action is logged in the audit trail.</p>
+            </details>
+
+            <details class="faq-item">
+              <summary>Can the engine produce false positives?</summary>
+              <p>Yes, especially in early operation before the ML model has enough local data. SUSPECT dispositions are visible but published; QUARANTINED entries always require human review precisely so a false positive can be approved. Threshold tuning is part of monthly ops review.</p>
+            </details>
+
+            <details class="faq-item">
+              <summary>What if the gate cameras fail?</summary>
+              <p>An inspector falls back to manual entry via the legacy Mandi App. Records entered this way are tagged with source=MANDI_APP rather than GATE_AUTO and still pass through the engine, but they will not have the high-confidence "system-captured" provenance.</p>
+            </details>
+
+            <details class="faq-item">
+              <summary>How does the platform protect citizen data?</summary>
+              <p>All access is role-gated. CNIC numbers are only visible to admin role and at the gate kiosk during scan. The platform is hosted within the Punjab Government data centre with TLS in transit and at rest. Audit logs are append-only and tamper-evident.</p>
+            </details>
+
+            <details class="faq-item">
+              <summary>Is the platform replacing MCMIS / AMIS / Mandi App?</summary>
+              <p>No. They continue to operate as input systems. The platform sits above them as the canonical view and the verification layer. Over time, with HQ approval, the platform may become the primary system of record while the legacy ones become input UIs — this is Phase 3 of the rollout plan.</p>
+            </details>
+          </section>
+
+          <!-- 12. GLOSSARY -->
+          <section class="subsection" id="glossary">
+            <div class="purpose-label">Section 12</div>
+            <h2>Glossary</h2>
+            <ul>
+              <li><strong>MCMIS</strong> — Market Committee Management Information System. PAMRA's existing system for staff/finance/infrastructure tracking.</li>
+              <li><strong>AMIS</strong> — Agricultural Marketing Information System. PAMRA's existing system for publishing commodity prices.</li>
+              <li><strong>Mandi App</strong> — Mobile/web app for inspectors to record live auctions at the mandi.</li>
+              <li><strong>ANPR</strong> — Automatic Number Plate Recognition. Camera-based system that reads vehicle plates.</li>
+              <li><strong>CNIC</strong> — Computerized National Identity Card. Pakistan's national ID.</li>
+              <li><strong>NADRA</strong> — National Database and Registration Authority. Pakistan's identity authority.</li>
+              <li><strong>Mandi</strong> — Pakistani term for a wholesale agricultural produce market or auction yard.</li>
+              <li><strong>Geofence</strong> — A virtual perimeter around a real-world location. Used to confirm a record originates inside a market.</li>
+              <li><strong>Quarantine</strong> — A record withheld from analytics pending human review.</li>
+              <li><strong>Z-score</strong> — Number of standard deviations a value is from the mean. Z-score &gt;3 means very unusual.</li>
+              <li><strong>IQR</strong> — Interquartile range. Used as a fence for volume outliers.</li>
+              <li><strong>Tare / Gross / Net</strong> — Empty truck / loaded truck / cargo weight. Net = gross − tare.</li>
+            </ul>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>
+    SitePublic.render('guide');
+
+    // Active-section highlighter for the TOC
+    const links = document.querySelectorAll('.toc a');
+    const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+    function onScroll() {
+      const y = window.scrollY + 120;
+      let active = 0;
+      sections.forEach((s, i) => { if (s && s.offsetTop <= y) active = i; });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+</html>

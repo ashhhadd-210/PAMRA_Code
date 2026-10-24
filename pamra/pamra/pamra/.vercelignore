@@ -1,0 +1,6 @@
+# server.js is the local-dev Express server. The Vercel deploy is fully static
+# (build-bundle.js → public/pamra-backend.js shims the API in the browser), so
+# excluding it prevents Vercel from auto-detecting an Express app.
+server.js
+.DS_Store
+*.log

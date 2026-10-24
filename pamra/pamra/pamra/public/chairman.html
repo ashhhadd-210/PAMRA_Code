@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chairman's Message · PAMRA</title>
+  <meta name="description" content="Message from Malik Ahmed Saeed Khan, Chairman of the Pakistan Agricultural Marketing Regulatory Authority (PAMRA)." />
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .kicker { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:800; margin-bottom:10px; }
+    .msg-grid { display:grid; grid-template-columns:280px 1fr; gap:40px; align-items:start; }
+    .portrait { background:var(--green-bg); border:1px solid var(--green-line); border-radius:12px; padding:22px; text-align:center; box-shadow:var(--shadow-sm); position:sticky; top:20px; }
+    .portrait img { width:100%; max-width:220px; aspect-ratio:3/4; object-fit:cover; border-radius:10px; display:block; margin:0 auto 16px; border:1px solid var(--green-line); }
+    .portrait .name { font-weight:800; color:var(--slate-900); font-size:18px; }
+    .portrait .role { color:var(--pk-green); font-size:13px; margin-top:4px; font-weight:600; }
+    .portrait .org { color:var(--slate-500); font-size:12px; margin-top:2px; }
+    .msg-body p { font-size:15.5px; color:var(--slate-700); line-height:1.75; margin:0 0 18px; }
+    .msg-body .lead { font-size:18px; color:var(--slate-900); font-weight:600; }
+    .msg-quote { background:var(--green-bg); border-left:4px solid var(--gold); border-radius:8px; padding:20px 24px; font-size:17px; color:var(--pk-green); font-weight:600; margin:8px 0 22px; }
+    .sign { margin-top:26px; border-top:1px solid var(--slate-200); padding-top:18px; }
+    .sign .who { font-weight:800; color:var(--slate-900); font-size:16px; }
+    .sign .what { color:var(--slate-500); font-size:13px; }
+    @media (max-width:880px){ .msg-grid{ grid-template-columns:1fr; } .portrait{ position:static; max-width:260px; } }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="badge">Office of the Chairman</div>
+      <h1>Message from the Chairman</h1>
+      <p class="tagline">On fostering a modern, transparent and competitive agricultural marketplace for Pakistan.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="msg-grid">
+        <div class="portrait">
+          <img src="/chairman.jpg" alt="Malik Ahmed Saeed Khan, Chairman PAMRA" />
+          <div class="name">Malik Ahmed Saeed Khan</div>
+          <div class="role">Chairman</div>
+          <div class="org">Pakistan Agricultural Marketing Regulatory Authority (PAMRA)</div>
+        </div>
+        <div class="msg-body">
+          <p class="lead">Agriculture is the backbone of Pakistan's economy and the source of livelihood for millions of our citizens. For too long, however, the journey from a farmer's field to the consumer's plate has been shaped not by fair value, but by information gaps and inefficiencies that prevent growers from receiving the true reward for their labour.</p>
+          <p>Of every rupee a household pays for agricultural produce, the farmer who cultivated the crop often receives only a fraction. This imbalance is sustained by information asymmetry, where prices remain hidden, quantities are declared manually, and transactions lack transparency and traceability. The challenge before us is therefore not merely one of technology; it is fundamentally one of trust and integrity.</p>
+          <div class="msg-quote">"Digitisation alone records the market; integrity transforms it. Our responsibility is not simply to record information more quickly, but to ensure that the information itself is accurate, transparent, and verifiable."</div>
+          <p>Guided by this conviction, PAMRA is advancing toward a Unified Market Platform: a comprehensive ecosystem, built around a unified customer relationship management core, designed to register farmers, commission agents, traders, and consignments; to ensure accurate quantity measurement through dual weight verification; and to safeguard market records through a robust Integrity Ledger founded on dual control mechanisms. Only once this trusted foundation is firmly in place can we responsibly unlock the power of analytics and forecasting.</p>
+          <p>Our approach is deliberate and phased. We will first demonstrate transparency and accountability within individual markets, provide farmers with real time price visibility in Urdu, strengthen the revenue recovery mechanisms that sustain the system, and subsequently enable predictive intelligence and market forecasting. This is the vision of PATMN, the Punjab Agricultural Trade and Market Network: a trusted agricultural market infrastructure for Punjab, built to endure beyond individual projects and governments, much as NADRA has become the nation's trusted source of identity.</p>
+          <p>PAMRA remains firmly committed to fostering innovation, strengthening market infrastructure, and implementing progressive regulatory frameworks that align with national priorities and international best practices. Through close collaboration with government institutions, market committees, private sector partners, and development organisations, we seek to build a transparent, competitive, and inclusive marketplace that serves the interests of all stakeholders.</p>
+          <p>To our farmers, I reaffirm that you remain at the very heart of PAMRA's mandate, and you will continue to be at the centre of this transformation. To our officers, market committees, and partners, I call upon each of you to uphold the highest standards of integrity at every weighbridge, in every transaction, and at every point of data entry.</p>
+          <p>Together, we will build agricultural markets that are transparent, efficient, and equitable: markets that empower our growers, strengthen food security, and contribute to a prosperous and resilient Punjab.</p>
+          <div class="sign">
+            <div class="who">Malik Ahmed Saeed Khan</div>
+            <div class="what">Chairman · Pakistan Agricultural Marketing Regulatory Authority (PAMRA)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="container" style="text-align:center">
+      <h2 class="section-title center" style="color:white">Read the strategy.</h2>
+      <p style="opacity:0.85;max-width:600px;margin:0 auto 28px">Explore how the Unified Market Platform and PATMN trust infrastructure deliver on this commitment.</p>
+      <a href="/patmn" class="btn-primary">The PATMN vision</a>
+      <a href="/mission" class="btn-secondary" style="margin-left:8px">Our mission</a>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>SitePublic.render('chairman');</script>
+</body>
+</html>

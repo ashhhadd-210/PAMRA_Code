@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reviews · PAMRA</title>
+  <meta name="description" content="Read what farmers, traders, and government officials say about PAMRA — and leave your own review of the platform and services." />
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .reviews-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: start; }
+
+    /* ── Submission card ── */
+    .submit-card {
+      background: white;
+      padding: 28px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--gold);
+      position: sticky;
+      top: 90px;
+    }
+    .submit-card h3 { margin: 0 0 6px; color: var(--pk-green); font-size: 18px; }
+    .submit-card .sub { color: var(--slate-500); font-size: 13px; margin-bottom: 18px; }
+    .submit-card label { display: block; font-size: 11px; font-weight: 700; color: var(--slate-700); margin-top: 14px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .submit-card input, .submit-card select, .submit-card textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--slate-200);
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+    }
+    .submit-card input:focus, .submit-card select:focus, .submit-card textarea:focus { outline: none; border-color: var(--pk-green); box-shadow: 0 0 0 3px var(--green-bg); }
+    .submit-card textarea { resize: vertical; min-height: 100px; }
+
+    .stars {
+      display: inline-flex;
+      gap: 4px;
+      font-size: 28px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .stars .s {
+      color: var(--slate-200);
+      transition: transform 0.1s, color 0.1s;
+    }
+    .stars .s.on { color: var(--gold); }
+    .stars .s:hover { transform: scale(1.1); }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 12px;
+      background: var(--pk-green);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .submit-btn:hover { background: var(--pk-green-light); }
+    .submit-btn:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; }
+
+    .form-msg { margin-top: 12px; font-size: 13px; min-height: 18px; }
+    .form-msg.ok { color: var(--pk-green); }
+    .form-msg.err { color: var(--red); }
+
+    .config-warning {
+      background: #fef3c7;
+      border-left: 4px solid var(--gold);
+      padding: 12px 14px;
+      border-radius: 4px;
+      margin-bottom: 18px;
+      font-size: 12px;
+      color: #92400e;
+    }
+    .config-warning strong { color: var(--gold); }
+    .config-warning code { background: white; padding: 1px 6px; border-radius: 3px; font-size: 11px; }
+
+    /* ── Review list ── */
+    .reviews-list .filter-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .filter-chip.active { background: var(--pk-green); color: white; border-color: var(--pk-green); }
+
+    .review-summary {
+      background: linear-gradient(135deg, var(--pk-green), var(--pk-green-light));
+      color: white;
+      padding: 22px 24px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+    .review-summary .big-rating { font-size: 48px; font-weight: 800; line-height: 1; color: var(--gold); }
+    .review-summary .out { font-size: 14px; opacity: 0.7; font-weight: 400; }
+    .review-summary .star-line { font-size: 22px; color: var(--gold); margin: 4px 0; }
+    .review-summary .count { font-size: 12px; opacity: 0.85; }
+    .review-summary .breakdown { font-size: 12px; opacity: 0.9; }
+    .review-summary .breakdown .row { display: grid; grid-template-columns: 30px 1fr 30px; gap: 8px; align-items: center; margin-bottom: 4px; }
+    .review-summary .breakdown .bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+    .review-summary .breakdown .fill { height: 100%; background: var(--gold); }
+
+    .review-card {
+      background: white;
+      padding: 20px 22px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+      border-left: 4px solid var(--pk-green);
+    }
+    .review-card .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .review-card .name { font-weight: 700; color: var(--slate-900); }
+    .review-card .role-badge {
+      display: inline-block;
+      background: var(--green-bg);
+      color: var(--pk-green);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 6px;
+    }
+    .review-card .role-badge.farmer { background: #d4edd9; color: var(--pk-green); }
+    .review-card .role-badge.trader { background: #fef3c7; color: #92400e; }
+    .review-card .role-badge.official { background: #dbeafe; color: #1e40af; }
+    .review-card .role-badge.committee { background: #ede9fe; color: #6d28d9; }
+    .review-card .role-badge.other { background: var(--slate-100); color: var(--slate-700); }
+    .review-card .date { font-size: 11px; color: var(--slate-500); }
+    .review-card .rating { color: var(--gold); font-size: 16px; margin-bottom: 8px; letter-spacing: 2px; }
+    .review-card .comment { color: var(--slate-700); font-size: 14px; line-height: 1.55; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      color: var(--slate-500);
+    }
+    .empty-state .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+    .empty-state h3 { color: var(--slate-700); margin: 0 0 6px; }
+
+    @media (max-width: 900px) {
+      .reviews-grid { grid-template-columns: 1fr; }
+      .submit-card { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · Reviews</div>
+      <h1 data-i18n="hero_reviews">Reviews &amp; Feedback</h1>
+      <p class="lead" data-i18n="hero_reviews_l">Hear from farmers, traders, market committee members, and government officials about PAMRA — and share your own experience with the platform and services.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="reviews-grid">
+
+        <!-- Review list (left) -->
+        <div class="reviews-list">
+          <div id="review-summary"></div>
+          <div class="filter-row">
+            <div class="filter-chip active" data-filter="all" data-i18n="rev_filter_all">All reviews</div>
+            <div class="filter-chip" data-filter="Farmer" data-i18n="rev_filter_farmer">Farmers</div>
+            <div class="filter-chip" data-filter="Trader" data-i18n="rev_filter_trader">Traders</div>
+            <div class="filter-chip" data-filter="Government Official" data-i18n="rev_filter_official">Officials</div>
+            <div class="filter-chip" data-filter="Committee Member" data-i18n="rev_filter_committee">Committee</div>
+          </div>
+          <div id="review-list"><div class="loader" data-i18n="rev_loading">Loading reviews…</div></div>
+        </div>
+
+        <!-- Submission card (right) -->
+        <aside>
+          <div class="submit-card">
+            <div id="config-banner"></div>
+            <h3 data-i18n="rev_share_h">Share your experience</h3>
+            <p class="sub" data-i18n="rev_share_p">Your review will be published immediately and helps PAMRA improve. All fields required.</p>
+
+            <form id="review-form">
+              <label data-i18n="rev_name">Your name</label>
+              <input type="text" id="r-name" maxlength="60" placeholder="e.g. Muhammad Ali" required />
+
+              <label data-i18n="rev_role">Your role</label>
+              <select id="r-role" required>
+                <option value="">Choose one…</option>
+                <option value="Farmer">Farmer</option>
+                <option value="Trader">Trader / Arhti</option>
+                <option value="Government Official">Government Official</option>
+                <option value="Committee Member">Market Committee Member</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <label data-i18n="rev_rating">Your rating</label>
+              <div class="stars" id="r-stars" role="radiogroup" aria-label="Rating">
+                <span class="s" data-v="1">★</span>
+                <span class="s" data-v="2">★</span>
+                <span class="s" data-v="3">★</span>
+                <span class="s" data-v="4">★</span>
+                <span class="s" data-v="5">★</span>
+              </div>
+
+              <label data-i18n="rev_comment">Your comment</label>
+              <textarea id="r-comment" maxlength="1000" placeholder="What worked well? What could be improved?" required></textarea>
+
+              <button type="submit" class="submit-btn" data-i18n="rev_submit">Submit review</button>
+              <div id="r-msg" class="form-msg"></div>
+            </form>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/supabase-config.js"></script>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script src="/reviews.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Portal</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .welcome { background: linear-gradient(120deg, var(--green-50), white); padding: 32px 24px; border-radius: var(--radius); margin-bottom: 24px; border: 1px solid var(--green-100); }
+    .welcome h1 { margin: 0 0 6px; font-size: 26px; color: var(--green-800); }
+    .welcome p { color: var(--slate-700); margin: 0; font-size: 14px; max-width: 700px; line-height: 1.5; }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .module-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border-top: 4px solid var(--green-700);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .module-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); text-decoration: none; }
+    .module-card .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: var(--green-50);
+      color: var(--green-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .module-card h3 { margin: 0; font-size: 16px; color: var(--slate-900); }
+    .module-card p { font-size: 13px; color: var(--slate-500); margin: 0; line-height: 1.45; }
+    .module-card .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--slate-100); }
+    .module-card .stat { font-size: 11px; color: var(--slate-500); }
+    .module-card .stat strong { color: var(--slate-900); font-size: 13px; }
+    .module-card .arrow { color: var(--green-700); font-size: 16px; }
+
+    .module-card.gate { border-top-color: var(--gold-500); }
+    .module-card.gate .icon { background: var(--gold-100); color: var(--gold-500); }
+    .module-card.admin { border-top-color: var(--red); }
+    .module-card.admin .icon { background: var(--red-50); color: var(--red); }
+    .module-card.mcmis { border-top-color: var(--green-600); }
+    .module-card.amis { border-top-color: var(--amber); }
+    .module-card.amis .icon { background: #fef3c7; color: var(--amber); }
+    .module-card.reports { border-top-color: var(--slate-500); }
+    .module-card.reports .icon { background: var(--slate-100); color: var(--slate-700); }
+    .module-card.ledger { border-top-color: var(--green-800); }
+    .module-card.ledger .icon { background: var(--green-50); color: var(--green-800); }
+
+    .vision-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 24px; }
+    .vision-tile { background: white; padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+    .vision-tile .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--green-700); font-weight: 700; margin-bottom: 6px; }
+    .vision-tile .text { font-size: 13px; line-height: 1.5; color: var(--slate-700); }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <div class="welcome" id="welcome"></div>
+    <div class="module-grid" id="modules"></div>
+
+    <div class="vision-row">
+      <div class="vision-tile">
+        <div class="label">Real-time</div>
+        <div class="text">Every auction, every market, every commodity — streamed live with sub-second latency from data capture to dashboard.</div>
+      </div>
+      <div class="vision-tile">
+        <div class="label">Integrated</div>
+        <div class="text">MCMIS, AMIS, and Mandi App speak one canonical language through the Unified Data Bus. No more reconciliation by hand.</div>
+      </div>
+      <div class="vision-tile">
+        <div class="label">Authenticated</div>
+        <div class="text">Four-layer engine catches manipulation, ghosts, and outliers before they reach policy decisions.</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('portal');
+
+      const user = me.user;
+      const greet = user.kind === 'trader'
+        ? `Welcome, ${user.name}`
+        : `Welcome, ${user.name}`;
+      const role = user.title || user.role;
+      document.getElementById('welcome').innerHTML = `
+        <h1>${greet}</h1>
+        <p>${role}. You have access to <strong>${me.modules.length}</strong> module${me.modules.length === 1 ? '' : 's'}. Choose where to begin.</p>
+      `;
+
+      const allModules = {
+        dashboard: { cls: '',         icon: 'MI', title: 'Market Intelligence',  desc: 'Live commodity flows, authenticity engine, anomaly alerts across all Punjab markets.', href: '/dashboard', help: 'See every auction across all PAMRA markets in real time. Each record is checked by the 4-layer authenticity engine before publication.' },
+        gate:      { cls: 'gate',     icon: 'GA', title: 'Gate Automation',      desc: 'AI camera ANPR, CNIC scanning, weighbridge and commodity classification at mandi gates.', href: '/gate', help: 'Track every truck entering/leaving the mandi automatically. AI captures plate, driver CNIC, commodity, and weight without manual entry.' },
+        ledger:    { cls: 'ledger',   icon: 'IL', title: 'Integrity Ledger',     desc: 'Append-only, hash-chained record of every captured truck. Tamper-evident — no one can change a sealed weight or plate.', href: '/ledger', help: 'Every gate capture is sealed into a hash-chained ledger. Each block depends on the one before it, so any edit to a stored weight or truck number breaks the chain and is detected instantly.' },
+        mcmis:     { cls: 'mcmis',    icon: 'MC', title: 'MCMIS',                 desc: 'Market Committee Management — staff, attendance, finances, infrastructure tracking.', href: '/mcmis', help: 'Manage staff attendance, market finances, and infrastructure issues across all market committees from one place.' },
+        amis:      { cls: 'amis',     icon: 'AM', title: 'AMIS',                  desc: 'Daily prices, 30-day trends, arrivals, commodity leaderboards across Punjab.', href: '/amis', help: 'Live commodity price discovery — protects farmers from undervaluation by making prices transparent.' },
+        reports:   { cls: 'reports',  icon: 'RP', title: 'Reports & Analytics',   desc: 'Scheduled reports, KPI dashboards, regulatory exports for PAMRA leadership.', href: '/reports', help: 'Generate scheduled and on-demand reports for leadership. Produces formal evidence for regulatory action and policy.' },
+        admin:     { cls: 'admin',    icon: 'AD', title: 'Administration',       desc: 'Users, traders, system health, adapter status, audit logs.', href: '/admin', help: 'Operate and maintain the platform itself — manage users, monitor source-system adapters, view audit logs.' }
+      };
+
+      const grid = document.getElementById('modules');
+      grid.innerHTML = me.modules.map(id => {
+        const m = allModules[id];
+        if (!m) return '';
+        return `
+          <a class="module-card ${m.cls}" href="${m.href}">
+            <div class="icon">${m.icon}</div>
+            <h3 data-help="${m.help}">${m.title}</h3>
+            <p>${m.desc}</p>
+            <div class="footer">
+              <span class="stat" id="stat-${id}"></span>
+              <span class="arrow">→</span>
+            </div>
+          </a>`;
+      }).join('');
+
+      // Populate stat hints
+      try {
+        const [recs, mh, ah] = await Promise.all([
+          PAMRA.api('/api/records?limit=1').catch(() => null),
+          PAMRA.api('/api/mcmis/summary').catch(() => null),
+          PAMRA.api('/api/amis/today').catch(() => null)
+        ]);
+        const set = (id, html) => { const el = document.getElementById(`stat-${id}`); if (el) el.innerHTML = html; };
+        if (recs) set('dashboard', `<strong>${recs.counters.total}</strong> records analyzed`);
+        if (mh)   set('mcmis',     `<strong>${mh.present_today}/${mh.total_staff}</strong> staff on duty`);
+        if (ah)   set('amis',      `<strong>${ah.length}</strong> price quotes today`);
+        const trucks = await PAMRA.api('/api/gate/trucks').catch(() => []);
+        set('gate',    `<strong>${trucks.length}</strong> trucks active`);
+        const reports = await PAMRA.api('/api/reports/list').catch(() => []);
+        set('reports', `<strong>${reports.length}</strong> reports available`);
+      } catch {}
+    })();
+  </script>
+</body>
+</html>

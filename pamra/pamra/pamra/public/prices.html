@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Today's Prices · PAMRA</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .filter-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-bar select, .filter-bar input { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--slate-200); font-size: 14px; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-tile { background: white; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm); border-top: 3px solid var(--pk-green); }
+    .stat-tile .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--slate-500); }
+    .stat-tile .value { font-size: 22px; font-weight: 700; margin-top: 4px; color: var(--pk-green); }
+    .updated-tag { font-size: 11px; color: var(--slate-500); padding: 4px 10px; background: var(--slate-50); border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · Today's Prices</div>
+      <h1 data-i18n="hero_prices">Today's Commodity Prices</h1>
+      <p class="lead" data-i18n="hero_prices_l">Live modal prices across all PAMRA-regulated markets in Punjab. Updated continuously from licensed auctions and verified by the four-layer authenticity engine.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="stats-row" id="stats"></div>
+
+      <div class="filter-bar">
+        <select id="commodity-filter"><option value="">All commodities</option></select>
+        <select id="market-filter"><option value="">All markets</option></select>
+        <input id="search" placeholder="Search…" />
+        <span class="updated-tag">Updated: <span id="updated"></span></span>
+        <span style="margin-left:auto;font-size:12px;color:var(--slate-500)" id="count"></span>
+      </div>
+
+      <div id="table-wrap"><div class="loader">Loading prices…</div></div>
+
+      <div style="margin-top:24px;padding:16px;background:var(--green-bg);border-radius:6px;border-left:3px solid var(--pk-green);font-size:13px;color:var(--slate-700)">
+        <strong>About these prices:</strong> Figures shown are modal (most frequent) prices recorded during today's auctions. PAMRA inspectors and the Authenticity Engine verify every entry before publication. For deeper analysis (30-day trends, leaderboards, arrivals), sign in to the <a href="/login">platform</a>.
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>
+    SitePublic.render('prices');
+
+    Promise.all([
+      SitePublic.fetchJson('/api/public/prices'),
+      SitePublic.fetchJson('/api/public/markets')
+    ]).then(([prices, markets]) => {
+      const commodities = [...new Set(prices.map(p => p.commodity))].sort();
+      commodities.forEach(c => document.getElementById('commodity-filter').insertAdjacentHTML('beforeend', `<option>${c}</option>`));
+      markets.forEach(m => document.getElementById('market-filter').insertAdjacentHTML('beforeend', `<option value="${m.id}">${m.name}</option>`));
+
+      document.getElementById('updated').textContent = new Date().toLocaleTimeString();
+
+      // Stats: count, biggest gainer, biggest faller, total arrivals
+      const gainer = prices.reduce((a, b) => b.change_pct > a.change_pct ? b : a);
+      const faller = prices.reduce((a, b) => b.change_pct < a.change_pct ? b : a);
+      const arrivals = prices.reduce((s, p) => s + p.arrivals_kg, 0);
+      document.getElementById('stats').innerHTML = `
+        <div class="stat-tile"><div class="label">Quotes today</div><div class="value">${prices.length}</div></div>
+        <div class="stat-tile"><div class="label">Commodities</div><div class="value">${commodities.length}</div></div>
+        <div class="stat-tile"><div class="label">Biggest gainer</div><div class="value" style="color:var(--pk-green)">${gainer.commodity} ▲${gainer.change_pct.toFixed(1)}%</div></div>
+        <div class="stat-tile"><div class="label">Biggest faller</div><div class="value" style="color:var(--red)">${faller.commodity} ▼${Math.abs(faller.change_pct).toFixed(1)}%</div></div>
+        <div class="stat-tile"><div class="label">Total arrivals</div><div class="value">${(arrivals / 1000).toFixed(0)}t</div></div>
+      `;
+
+      function render() {
+        const c = document.getElementById('commodity-filter').value;
+        const m = document.getElementById('market-filter').value;
+        const q = document.getElementById('search').value.toLowerCase();
+        const filtered = prices.filter(p =>
+          (!c || p.commodity === c) &&
+          (!m || p.market_id === m) &&
+          (!q || p.commodity.toLowerCase().includes(q) || p.market_name.toLowerCase().includes(q))
+        );
+        document.getElementById('count').textContent = `${filtered.length} of ${prices.length}`;
+        document.getElementById('table-wrap').innerHTML = `
+          <table class="public">
+            <thead><tr><th>Commodity</th><th>Market</th><th>Modal (Rs/kg)</th><th>Min</th><th>Max</th><th>Change vs yesterday</th><th>Arrivals</th></tr></thead>
+            <tbody>
+              ${filtered.map(p => `
+                <tr>
+                  <td><strong>${p.commodity}</strong></td>
+                  <td>${p.market_name}</td>
+                  <td><strong>Rs ${p.modal_pkr}</strong></td>
+                  <td style="color:var(--slate-500)">Rs ${p.min_pkr}</td>
+                  <td style="color:var(--slate-500)">Rs ${p.max_pkr}</td>
+                  <td><span class="${p.change_pct >= 0 ? 'change-up' : 'change-down'}">${p.change_pct >= 0 ? '▲' : '▼'} ${Math.abs(p.change_pct).toFixed(2)}%</span></td>
+                  <td style="color:var(--slate-500)">${(p.arrivals_kg / 1000).toFixed(1)}t</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+      render();
+      ['commodity-filter','market-filter','search'].forEach(id => document.getElementById(id).addEventListener('input', render));
+    });
+  </script>
+</body>
+</html>

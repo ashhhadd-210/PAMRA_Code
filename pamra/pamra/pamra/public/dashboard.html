@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Market Intelligence</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/shared.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    /* Override old header — using shared one now */
+    .app-header { display: none; }
+    .app-grid { height: calc(100vh - 60px); }
+    /* Subtle banner for source attribution */
+    .source-banner { padding: 8px 16px; background: var(--green-50); color: var(--green-700); font-size: 12px; border-bottom: 1px solid var(--green-100); }
+    .source-banner strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <div class="source-banner">
+    <strong>Live data sources:</strong> MCMIS · AMIS · Mandi App · Gate Automation — every record runs through the 4-layer authenticity engine before publication.
+  </div>
+
+  <!-- Status pills (subset of old header) -->
+  <div style="display:flex;justify-content:space-between;padding:10px 16px;background:white;border-bottom:1px solid var(--slate-100);align-items:center;">
+    <div style="font-size:13px;color:var(--slate-700)"><strong style="color:var(--green-700)">Market Intelligence</strong> — Real-time auction monitoring across Punjab</div>
+    <div class="status-pills">
+      <div class="pill clean" data-help="Records that passed all 4 engine layers and are published to analytics."><span class="dot"></span><span id="count-clean">0</span> Clean</div>
+      <div class="pill suspect" data-help="Records flagged by at least one layer but still published — visible to operators for awareness."><span class="dot"></span><span id="count-suspect">0</span> Suspect</div>
+      <div class="pill quarantined" data-help="Records withheld from analytics. Require inspector or admin approval before release."><span class="dot"></span><span id="count-quarantined">0</span> Quarantined</div>
+      <div class="pill total" data-help="Total records processed by the engine across all 4 sources (MCMIS, AMIS, Mandi App, Gate Auto)."><span id="count-total">0</span> Total</div>
+      <div class="pill" id="ws-status">connecting…</div>
+    </div>
+  </div>
+
+  <main class="app-grid">
+    <section class="map-card">
+      <div class="card-header">
+        <h2 data-help="All 10 PAMRA markets shown live. Marker size reflects activity; red markers indicate high anomaly density.">Punjab markets — live</h2>
+        <span class="hint">Click a marker to filter records</span>
+      </div>
+      <div id="map"></div>
+    </section>
+
+    <section class="feed-card">
+      <div class="card-header">
+        <h2 data-help="Every record arriving from any source, in order. Click any record to open the audit drawer with full engine reasoning.">Live record stream</h2>
+        <div class="filters">
+          <label data-help="Show records the engine approved as authentic."><input type="checkbox" id="f-clean" checked> Clean</label>
+          <label data-help="Show records flagged but published."><input type="checkbox" id="f-suspect" checked> Suspect</label>
+          <label data-help="Show records withheld pending human review."><input type="checkbox" id="f-quarantined" checked> Quarantined</label>
+        </div>
+      </div>
+      <div id="feed" class="feed"></div>
+    </section>
+
+    <section class="analytics-card">
+      <div class="card-header"><h2 data-help="Counts of records flagged by each of the 4 independent verification layers. Use this to spot which kind of manipulation is most active.">Authenticity engine — by layer</h2></div>
+      <div class="layer-stats" id="layer-stats">
+        <div class="layer-row" data-layer="cross_source" data-help="Catches records that disagree with the same auction reported by other sources (MCMIS vs AMIS vs Mandi App)."><span class="layer-name">Cross-source</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="statistical" data-help="Catches impossible prices (Z-score > 3) or volumes outside the rolling 30-day IQR fence."><span class="layer-name">Statistical</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="geo_staff" data-help="Catches records submitted from outside the market geofence, or under staff IDs not on the day's roster."><span class="layer-name">Geo + staff</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="ml_fraud" data-help="ML model assigns a 0–1 fraud confidence per record. Catches subtle patterns no single rule sees."><span class="layer-name">ML fraud</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+      </div>
+      <div class="card-header" style="margin-top:1rem"><h2 data-help="Markets ranked by how many of their records were flagged. Use to prioritise inspector visits.">Top affected markets</h2></div>
+      <div id="market-stats" class="market-stats"></div>
+    </section>
+  </main>
+
+  <!-- AI prediction + weather (below the live ops grid) -->
+  <section style="padding:20px 16px;background:var(--slate-50);border-top:1px solid var(--slate-100)">
+    <div id="ai-mi"></div>
+    <div id="wx-mi" style="margin-top:22px"></div>
+  </section>
+
+  <aside id="drawer" class="drawer hidden">
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <div id="drawer-content"></div>
+  </aside>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script src="/weather.js"></script>
+  <script src="/forecast.js"></script>
+  <script>
+    // Gate the dashboard behind auth and render header before app.js runs
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('dashboard');
+      PAMRAForecast.render('ai-mi');
+      PAMRAWeather.render('wx-mi', { compact: true });
+      // Then load the main dashboard app
+      const s = document.createElement('script');
+      s.src = '/app.js';
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

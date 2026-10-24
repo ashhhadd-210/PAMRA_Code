@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>News &amp; Notifications · PAMRA</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .news-card.full { padding: 24px; }
+    .news-card.full h3 { font-size: 18px; margin: 10px 0; }
+    .news-card.full p { font-size: 14px; }
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+    .filter-bar .chip { padding: 6px 14px; border-radius: 999px; background: var(--slate-100); color: var(--slate-700); cursor: pointer; font-size: 13px; font-weight: 500; border: 1px solid transparent; }
+    .filter-bar .chip.active { background: var(--pk-green); color: white; border-color: var(--pk-green); }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · News</div>
+      <h1 data-i18n="hero_news">News &amp; Notifications</h1>
+      <p class="lead" data-i18n="hero_news_l">Official circulars, tenders, press releases and notifications from the Punjab Agricultural Marketing Regulatory Authority.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="filter-bar" id="filters">
+        <div class="chip active" data-cat="">All</div>
+      </div>
+      <div class="news-grid" id="news-grid"><div class="loader">Loading…</div></div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>
+    SitePublic.render('news');
+
+    SitePublic.fetchJson('/api/public/news').then(news => {
+      const cats = [...new Set(news.map(n => n.category))];
+      const fbar = document.getElementById('filters');
+      cats.forEach(c => fbar.insertAdjacentHTML('beforeend', `<div class="chip" data-cat="${c}">${c}</div>`));
+
+      let active = '';
+      function render() {
+        const list = active ? news.filter(n => n.category === active) : news;
+        document.getElementById('news-grid').innerHTML = list.map(n => `
+          <div class="news-card full">
+            <div><span class="date">${n.date}</span><span class="tag">${n.category}</span></div>
+            <h3>${n.title}</h3>
+            <p>${n.summary}</p>
+            ${n.body ? `<p style="margin-top:8px">${n.body}</p>` : ''}
+          </div>
+        `).join('');
+      }
+      render();
+      fbar.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('chip')) return;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+        active = e.target.dataset.cat;
+        render();
+      });
+    });
+  </script>
+</body>
+</html>

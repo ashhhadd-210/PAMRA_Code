@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA — Unified Market Intelligence</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">PAMRA</div>
+      <div class="brand-text">
+        <div class="title">Unified Market Intelligence Platform</div>
+        <div class="subtitle">MCMIS · AMIS · Mandi App — single source of truth</div>
+      </div>
+    </div>
+    <div class="status-pills">
+      <div class="pill clean"><span class="dot"></span><span id="count-clean">0</span> Clean</div>
+      <div class="pill suspect"><span class="dot"></span><span id="count-suspect">0</span> Suspect</div>
+      <div class="pill quarantined"><span class="dot"></span><span id="count-quarantined">0</span> Quarantined</div>
+      <div class="pill total"><span id="count-total">0</span> Total records</div>
+      <div class="pill" id="ws-status">connecting…</div>
+    </div>
+  </header>
+
+  <main class="app-grid">
+    <section class="map-card">
+      <div class="card-header">
+        <h2>Punjab markets — live</h2>
+        <span class="hint">Click a marker to filter records</span>
+      </div>
+      <div id="map"></div>
+    </section>
+
+    <section class="feed-card">
+      <div class="card-header">
+        <h2>Live record stream</h2>
+        <div class="filters">
+          <label><input type="checkbox" id="f-clean" checked> Clean</label>
+          <label><input type="checkbox" id="f-suspect" checked> Suspect</label>
+          <label><input type="checkbox" id="f-quarantined" checked> Quarantined</label>
+        </div>
+      </div>
+      <div id="feed" class="feed"></div>
+    </section>
+
+    <section class="analytics-card">
+      <div class="card-header"><h2>Authenticity engine — by layer</h2></div>
+      <div class="layer-stats" id="layer-stats">
+        <div class="layer-row" data-layer="cross_source"><span class="layer-name">Cross-source</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="statistical"><span class="layer-name">Statistical</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="geo_staff"><span class="layer-name">Geo + staff</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+        <div class="layer-row" data-layer="ml_fraud"><span class="layer-name">ML fraud</span><span class="layer-bar"><span class="layer-fill"></span></span><span class="layer-count">0</span></div>
+      </div>
+      <div class="card-header" style="margin-top:1rem"><h2>Top affected markets</h2></div>
+      <div id="market-stats" class="market-stats"></div>
+    </section>
+  </main>
+
+  <aside id="drawer" class="drawer hidden">
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <div id="drawer-content"></div>
+  </aside>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

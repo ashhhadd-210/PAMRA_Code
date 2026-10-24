@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Our Mission &amp; Mandate · PAMRA</title>
+  <meta name="description" content="The mission, vision, core values and statutory mandate of the Punjab Agricultural Marketing Regulatory Authority under the PAMRA Act 2018." />
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .kicker { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:800; margin-bottom:10px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .scard { background:white; border:1px solid var(--green-line); border-radius:8px; padding:24px; box-shadow:var(--shadow-sm); }
+    .scard h3 { margin:0 0 8px; font-size:17px; color:var(--pk-green); }
+    .scard p { font-size:14px; color:var(--slate-700); margin:0; }
+    .statement { background:var(--green-bg); border-left:4px solid var(--pk-green); border-radius:8px; padding:26px 30px; }
+    .statement h3 { color:var(--pk-green); margin:0 0 10px; font-size:14px; letter-spacing:1px; text-transform:uppercase; }
+    .statement p { font-size:18px; color:var(--slate-900); line-height:1.55; margin:0; }
+    .value .ic { width:42px;height:42px;border-radius:10px;background:var(--green-bg);color:var(--pk-green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;margin-bottom:12px; }
+    @media (max-width:880px){ .grid-2,.grid-3{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="badge">PAMRA Act XII of 2018</div>
+      <h1>Our Mission &amp; Mandate</h1>
+      <p class="tagline">PAMRA exists to make Punjab's agricultural markets transparent, fair and accountable — putting growers at the centre of every transaction.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="grid-2">
+        <div class="statement">
+          <h3>Mission</h3>
+          <p>To regulate and modernise Punjab's agricultural markets through verified, attributable data — breaking information asymmetry so growers receive a fair price and the state earns the right to forecast.</p>
+        </div>
+        <div class="statement">
+          <h3>Vision</h3>
+          <p>A digitally integrated market ecosystem with end-to-end supply-chain visibility, transparent price monitoring and real-time analytics for evidence-based policymaking and market efficiency.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="container">
+      <div class="kicker">Core values</div>
+      <h2 class="section-title" style="font-size:28px">What guides every decision.</h2>
+      <div class="grid-3">
+        <div class="scard value"><div class="ic">I</div><h3>Integrity first</h3><p>Every figure must be verified, attributable and tamper-resistant before it informs a decision.</p></div>
+        <div class="scard value"><div class="ic">G</div><h3>Growers first</h3><p>The PAMRA Act places growers at the legislative centre. Closing the farmer–market distance is our purpose.</p></div>
+        <div class="scard value"><div class="ic">T</div><h3>Transparency</h3><p>Open price discovery and public reporting protect farmers and the public from manipulation.</p></div>
+        <div class="scard value"><div class="ic">E</div><h3>Evidence-based</h3><p>Policy runs on clean, timely data — not estimates, anecdotes or partial samples.</p></div>
+        <div class="scard value"><div class="ic">S</div><h3>Data sovereignty</h3><p>Commodity data runs on PAMRA-owned, on-premise infrastructure and never leaves the department's control.</p></div>
+        <div class="scard value"><div class="ic">A</div><h3>Accountability</h3><p>A named owner and timestamp behind every record — anomalies have an owner, not just a colour on a chart.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="kicker">Statutory mandate</div>
+      <h2 class="section-title" style="font-size:28px">What the PAMRA Act 2018 empowers us to do.</h2>
+      <div class="grid-3">
+        <div class="scard"><h3>Regulate markets</h3><p>License, register and supervise auction yards, wholesale markets and committee operations across Punjab.</p></div>
+        <div class="scard"><h3>Fair auctions</h3><p>Promote transparent, competitive auction systems and improve transaction transparency.</p></div>
+        <div class="scard"><h3>Market information</h3><p>Provide market information services — live prices, arrivals and trends — to all stakeholders.</p></div>
+        <div class="scard"><h3>Alternative channels</h3><p>Promote alternative marketing channels and support contract farming.</p></div>
+        <div class="scard"><h3>Grower support</h3><p>Deliver meaningful support to growers — digital receipts, payment visibility and market history.</p></div>
+        <div class="scard"><h3>Infrastructure</h3><p>Upgrade and maintain market infrastructure — weighbridges, auction sheds, cold storage and CCTV.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="container" style="text-align:center">
+      <h2 class="section-title center" style="color:white">Integrity before intelligence.</h2>
+      <p style="opacity:0.85;max-width:620px;margin:0 auto 28px">Our mandate is delivered through the Unified Market Platform and the PATMN trust infrastructure — register the farmer, verify every truck, lock data entry, then forecast.</p>
+      <a href="/patmn" class="btn-primary">The PATMN vision</a>
+      <a href="/" class="btn-secondary" style="margin-left:8px">See the platform</a>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>SitePublic.render('mission');</script>
+</body>
+</html>

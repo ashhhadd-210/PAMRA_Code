@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact · PAMRA</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; }
+    .contact-info { background: var(--green-bg); padding: 28px; border-radius: 8px; border-left: 4px solid var(--pk-green); }
+    .contact-info h3 { color: var(--pk-green); margin: 0 0 14px; font-size: 16px; }
+    .contact-info dl { display: grid; grid-template-columns: 100px 1fr; gap: 10px 16px; font-size: 14px; margin: 0; }
+    .contact-info dt { color: var(--slate-500); font-weight: 500; }
+    .contact-info dd { margin: 0; color: var(--slate-900); }
+    .contact-form { background: white; padding: 28px; border-radius: 8px; box-shadow: var(--shadow-sm); }
+    .contact-form label { font-size: 12px; font-weight: 600; color: var(--slate-700); display: block; margin: 14px 0 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--slate-200); font-size: 14px; font-family: inherit; }
+    .contact-form button { margin-top: 18px; width: 100%; padding: 12px; }
+    .channel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .channel-tile { background: white; padding: 16px; border-radius: 6px; text-align: center; box-shadow: var(--shadow-sm); }
+    .channel-tile .icon { font-size: 24px; margin-bottom: 6px; }
+    .channel-tile .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-500); }
+    .channel-tile .value { font-size: 13px; font-weight: 600; color: var(--pk-green); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · Contact</div>
+      <h1 data-i18n="hero_contact">Contact PAMRA</h1>
+      <p class="lead" data-i18n="hero_contact_l">Get in touch with the Authority. We respond to public queries, grievances, technical support requests, and media enquiries.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="contact-grid">
+        <div>
+          <div class="contact-info">
+            <h3>Head Office</h3>
+            <dl>
+              <dt>Address</dt><dd>Punjab Agricultural Marketing Regulatory Authority<br>Civic Centre, Johar Town<br>Lahore — 54600, Pakistan</dd>
+              <dt>Phone</dt><dd>+92-42-99231400</dd>
+              <dt>Fax</dt><dd>+92-42-99231410</dd>
+              <dt>Email</dt><dd><a href="mailto:info@pamra.punjab.gov.pk">info@pamra.punjab.gov.pk</a></dd>
+              <dt>Hours</dt><dd>Mon–Fri · 09:00–17:00 PKT</dd>
+            </dl>
+          </div>
+
+          <h3 style="margin-top:32px;color:var(--pk-green)">Quick contact channels</h3>
+          <div class="channel-grid">
+            <div class="channel-tile">
+              <div class="icon">☎</div>
+              <div class="label">Farmer Helpline</div>
+              <div class="value">0800-PAMRA (72672)</div>
+            </div>
+            <div class="channel-tile">
+              <div class="icon">✉</div>
+              <div class="label">Trader Support</div>
+              <div class="value">traders@pamra.punjab.gov.pk</div>
+            </div>
+            <div class="channel-tile">
+              <div class="icon">⚐</div>
+              <div class="label">Grievance Cell</div>
+              <div class="value">complaints@pamra.punjab.gov.pk</div>
+            </div>
+            <div class="channel-tile">
+              <div class="icon">📺</div>
+              <div class="label">Media Enquiries</div>
+              <div class="value">media@pamra.punjab.gov.pk</div>
+            </div>
+          </div>
+        </div>
+
+        <form class="contact-form" id="contact-form" onsubmit="event.preventDefault(); document.getElementById('msg').textContent='Thank you. Your message has been received. We typically respond within 3 working days.'; this.reset();">
+          <h3 style="margin:0;color:var(--pk-green);font-size:16px">Send us a message</h3>
+          <label>Your name</label>
+          <input required placeholder="Full name" />
+          <label>Email or phone</label>
+          <input required placeholder="email@example.com or +92-3XX-XXXXXXX" />
+          <label>Category</label>
+          <select required>
+            <option value="">Choose a category</option>
+            <option>General enquiry</option>
+            <option>Farmer support</option>
+            <option>Trader registration</option>
+            <option>Market complaint</option>
+            <option>Platform technical issue</option>
+            <option>Media / press</option>
+          </select>
+          <label>Message</label>
+          <textarea required rows="6" placeholder="How can we help?"></textarea>
+          <button type="submit" class="btn-green">Send message</button>
+          <div id="msg" style="margin-top:14px;font-size:13px;color:var(--pk-green);font-weight:600"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>SitePublic.render('contact');</script>
+</body>
+</html>

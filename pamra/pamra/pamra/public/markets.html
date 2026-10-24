@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Markets · PAMRA</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .market-tile {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--pk-green);
+    }
+    .market-tile h3 { margin: 0 0 6px; font-size: 17px; color: var(--pk-green); }
+    .market-tile .id { font-size: 11px; color: var(--slate-500); font-family: monospace; }
+    .market-tile dl { margin: 12px 0 0; display: grid; grid-template-columns: 90px 1fr; gap: 4px; font-size: 13px; }
+    .market-tile dt { color: var(--slate-500); }
+    .market-tile dd { margin: 0; color: var(--slate-900); }
+    .filter-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .filter-bar input { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--slate-200); font-size: 14px; flex: 1; max-width: 400px; }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · Markets</div>
+      <h1 data-i18n="hero_markets">Market Directory</h1>
+      <p class="lead" data-i18n="hero_markets_l">PAMRA regulates agricultural produce markets across all districts of Punjab. Use the directory below to find a market by name or city.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="filter-bar">
+        <input id="filter" placeholder="Search by market name…" />
+        <span style="color:var(--slate-500);font-size:13px" id="count"></span>
+      </div>
+      <div class="market-grid" id="grid"><div class="loader">Loading markets…</div></div>
+    </div>
+  </section>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>
+    SitePublic.render('markets');
+
+    SitePublic.fetchJson('/api/public/markets').then(markets => {
+      const grid = document.getElementById('grid');
+      function render(list) {
+        document.getElementById('count').textContent = `Showing ${list.length} of ${markets.length}`;
+        if (list.length === 0) { grid.innerHTML = '<div class="loader">No markets match your search.</div>'; return; }
+        grid.innerHTML = list.map(m => `
+          <div class="market-tile">
+            <h3>${m.name} Mandi</h3>
+            <div class="id">${m.id}</div>
+            <dl>
+              <dt>Location</dt><dd>${m.lat.toFixed(3)}°N, ${m.lng.toFixed(3)}°E</dd>
+              <dt>Hours</dt><dd>05:30 – 14:00 daily</dd>
+              <dt>Commodities</dt><dd>Wheat, Rice, Cotton, Vegetables</dd>
+              <dt>Auction Type</dt><dd>Open outcry (live-streamed)</dd>
+              <dt>Phone</dt><dd>+92-42-99231${(400 + parseInt(m.id.match(/\d+/)) || 0).toString().padStart(3, '0')}</dd>
+            </dl>
+          </div>
+        `).join('');
+      }
+      render(markets);
+      document.getElementById('filter').addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        render(markets.filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q)));
+      });
+    });
+  </script>
+</body>
+</html>

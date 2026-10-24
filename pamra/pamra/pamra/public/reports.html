@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · Reports</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .report-card { display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--slate-100); }
+    .report-card:hover { background: var(--slate-50); }
+    .report-card .title { font-weight: 600; font-size: 14px; }
+    .report-card .meta { font-size: 11px; color: var(--slate-500); margin-top: 2px; }
+    .report-card .fmt { font-size: 11px; padding: 3px 8px; background: var(--slate-100); border-radius: 4px; font-weight: 600; }
+    .report-card .freq { font-size: 11px; padding: 3px 8px; background: var(--green-50); color: var(--green-700); border-radius: 4px; }
+    .section-label { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--slate-500); font-weight:700; margin:26px 0 10px; }
+    .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:900px){ .charts-grid{ grid-template-columns:1fr; } }
+    .chart-card canvas { width:100%; height:240px; display:block; }
+    .chart-card .card-header h2 { font-size:15px; margin:0; }
+    .legend { display:flex; gap:18px; font-size:12px; color:var(--slate-500); margin-top:10px; flex-wrap:wrap; }
+    .legend span { display:inline-flex; align-items:center; gap:6px; }
+    .legend i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+    .sharebar { display:flex; height:30px; border-radius:6px; overflow:hidden; margin-top:14px; }
+    .sharebar > div { display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:700; }
+    .storetable { width:100%; border-collapse:collapse; margin-top:6px; }
+    .storetable th { text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate-500); padding:8px 10px; border-bottom:1px solid var(--slate-200); }
+    .storetable td { padding:9px 10px; border-bottom:1px solid var(--slate-100); font-size:12.5px; }
+    .storetable td.r { text-align:right; font-variant-numeric:tabular-nums; }
+    .dot { width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:middle; }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <h1>Reports &amp; Analytics</h1>
+    <p class="subtitle">Operational dashboards, scheduled reports, and exports for PAMRA leadership and committees.</p>
+
+    <div class="kpi-grid" id="kpis"></div>
+
+    <!-- Storage & financial summary -->
+    <div class="section-label">Cold storage &amp; financial summary</div>
+    <div class="kpi-grid" id="store-kpis"></div>
+
+    <!-- Charts -->
+    <div class="charts-grid" style="margin-top:16px">
+      <div class="card chart-card">
+        <div class="card-header"><h2>Produce in cold storage — by commodity</h2><span class="hint">tonnes stored</span></div>
+        <div class="card-body">
+          <canvas id="chart-commodity"></canvas>
+          <div class="legend"><span><i style="background:#186b34"></i> Vegetables</span><span><i style="background:#c9a227"></i> Fruits</span></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-header"><h2>Stored produce value — monthly</h2><span class="hint">total ₨ value held in storage</span></div>
+        <div class="card-body">
+          <canvas id="chart-value"></canvas>
+          <div class="legend"><span><i style="background:#186b34"></i> Value in store (₨)</span></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-header"><h2>Profit &amp; Loss — monthly</h2><span class="hint">revenue vs operating cost</span></div>
+        <div class="card-body">
+          <canvas id="chart-pl"></canvas>
+          <div class="legend"><span><i style="background:#186b34"></i> Revenue</span><span><i style="background:#cbd5e1"></i> Operating cost</span><span><i style="background:#c9a227"></i> Net profit</span></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-header"><h2>Storage mix &amp; value</h2><span class="hint">vegetables vs fruits</span></div>
+        <div class="card-body">
+          <div id="sharebar" class="sharebar"></div>
+          <div class="legend" id="share-legend"></div>
+          <table class="storetable" id="store-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><h2>Available reports</h2><span class="hint">Click to generate</span></div>
+      <div id="reports"></div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    // ───────────────── Storage + financial dataset (prototype) ─────────────────
+    const storage = [
+      { name: 'Potato',  cat: 'veg',   tonnes: 12400, price: 45  },
+      { name: 'Onion',   cat: 'veg',   tonnes: 8900,  price: 70  },
+      { name: 'Apple',   cat: 'fruit', tonnes: 6500,  price: 160 },
+      { name: 'Kinnow',  cat: 'fruit', tonnes: 5400,  price: 120 },
+      { name: 'Tomato',  cat: 'veg',   tonnes: 3200,  price: 90  },
+      { name: 'Banana',  cat: 'fruit', tonnes: 2100,  price: 140 },
+      { name: 'Carrot',  cat: 'veg',   tonnes: 1800,  price: 55  },
+      { name: 'Mango',   cat: 'fruit', tonnes: 1500,  price: 180 },
+      { name: 'Garlic',  cat: 'veg',   tonnes: 1200,  price: 320 },
+      { name: 'Dates',   cat: 'fruit', tonnes: 900,   price: 400 },
+    ];
+    storage.forEach(s => { s.value = s.tonnes * 1000 * s.price; });
+
+    // Monthly value-in-store + P&L (last 12 months). Some months run at a loss.
+    const months = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+    const storedValueM = [3.1, 3.8, 4.6, 5.4, 6.1, 5.7, 5.0, 4.4, 3.9, 3.4, 4.2, 5.1].map(v => v * 1e9); // ₨ in store
+    const revenueM     = [142, 168, 196, 224, 251, 238, 205, 181, 164, 150, 178, 212].map(v => v * 1e6);
+    const costM        = [128, 150, 176, 198, 232, 246, 214, 176, 158, 162, 170, 188].map(v => v * 1e6);
+    const monthly = months.map((m, i) => ({ month: m, stored: storedValueM[i], revenue: revenueM[i], cost: costM[i], profit: revenueM[i] - costM[i] }));
+
+    const fmtBn = v => v >= 1e9 ? `₨${(v/1e9).toFixed(2)}bn` : v >= 1e7 ? `₨${(v/1e7).toFixed(2)}cr` : v >= 1e6 ? `₨${(v/1e6).toFixed(1)}M` : `₨${v}`;
+
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('reports');
+
+      const [kpis, reports] = await Promise.all([
+        PAMRA.api('/api/reports/kpis'),
+        PAMRA.api('/api/reports/list')
+      ]);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="kpi" data-help="Total records processed by the authenticity engine in the last 24 hours, across all four data sources."><div class="label">Records today</div><div class="value">${kpis.total_records_today}</div><div class="sub">all sources</div></div>
+        <div class="kpi red" data-help="Records the engine rejected. Each requires inspector review — high counts may indicate market-level manipulation."><div class="label">Quarantined</div><div class="value">${kpis.quarantined_today}</div><div class="sub">flagged by engine</div></div>
+        <div class="kpi gold" data-help="Total monthly fees collected by all market committees. Used in revenue dashboards and finance reports."><div class="label">Revenue collected</div><div class="value">${PAMRA.formatPkr(kpis.revenue_collected_pkr)}</div><div class="sub">monthly across markets</div></div>
+        <div class="kpi" data-help="PAMRA markets reporting data into the platform right now. A drop here indicates an adapter failure."><div class="label">Active markets</div><div class="value">${kpis.active_markets}</div><div class="sub">reporting live</div></div>
+        <div class="kpi amber" data-help="Headcount of staff currently on duty across Punjab — tracked via biometric punch-in from MCMIS."><div class="label">Staff on duty</div><div class="value">${kpis.staff_on_duty}</div><div class="sub">across Punjab</div></div>
+        <div class="kpi" data-help="Trucks that completed the full 8-stage gate flow today, producing verified arrival records."><div class="label">Trucks processed</div><div class="value">${kpis.trucks_processed}</div><div class="sub">through gate today</div></div>
+      `;
+
+      // ───── Storage / financial KPIs ─────
+      const totalTonnes = storage.reduce((a, s) => a + s.tonnes, 0);
+      const totalStored = storage.reduce((a, s) => a + s.value, 0);
+      const totalRevenue = monthly.reduce((a, m) => a + m.revenue, 0);
+      const totalCost = monthly.reduce((a, m) => a + m.cost, 0);
+      const netProfit = totalRevenue - totalCost;
+      const margin = ((netProfit / totalRevenue) * 100).toFixed(1);
+      const vegTonnes = storage.filter(s => s.cat === 'veg').reduce((a, s) => a + s.tonnes, 0);
+
+      document.getElementById('store-kpis').innerHTML = `
+        <div class="kpi" data-help="Total tonnage of fruits and vegetables currently held across PAMRA cold-storage facilities."><div class="label">Total produce stored</div><div class="value">${(totalTonnes/1000).toFixed(1)}k t</div><div class="sub">${(vegTonnes/totalTonnes*100).toFixed(0)}% veg · ${(100-vegTonnes/totalTonnes*100).toFixed(0)}% fruit</div></div>
+        <div class="kpi gold" data-help="Total rupee value of produce currently held in storage (tonnes × commodity price)."><div class="label">Value in storage</div><div class="value">${fmtBn(totalStored)}</div><div class="sub">at current prices</div></div>
+        <div class="kpi" data-help="Total storage & market-fee revenue collected over the last 12 months."><div class="label">Revenue (12 mo)</div><div class="value">${fmtBn(totalRevenue)}</div><div class="sub">storage + market fees</div></div>
+        <div class="kpi ${netProfit >= 0 ? 'gold' : 'red'}" data-help="Net profit = revenue − operating cost over the last 12 months."><div class="label">Net profit (12 mo)</div><div class="value">${fmtBn(netProfit)}</div><div class="sub">${margin}% margin</div></div>
+      `;
+
+      // ───── Reports list (+ two new storage/finance reports) ─────
+      const extra = [
+        { id: 'R-009', title: 'Cold Storage Utilization & Stock', frequency: 'Weekly', format: 'XLSX', last_run: 'today 06:00' },
+        { id: 'R-010', title: 'Profit & Loss Statement', frequency: 'Monthly', format: 'PDF', last_run: '01 Jun 2026' },
+      ];
+      const allReports = reports.concat(extra);
+      const reportPurpose = {
+        'R-001': 'Snapshot of the previous day across every market — auctions, arrivals, anomalies. Read by HQ each morning.',
+        'R-002': 'Movement in commodity prices week-on-week, with statistical commentary triggers (sharp drops, surges).',
+        'R-003': 'Fee collection by market vs target. Identifies committees lagging on revenue.',
+        'R-004': 'Every record the engine rejected, with the layer that caught it and reason. Evidentiary record for inquiries.',
+        'R-005': 'Staff attendance %, performance flags, infractions. Drives HR action.',
+        'R-006': 'Status of every infrastructure issue across markets, time-to-resolution, severity distribution.',
+        'R-007': 'Audit of trader/vehicle registrations and any anomalies (CNIC mismatches, expired licences).',
+        'R-008': 'Predicted surplus/shortage by commodity over the next 7-14 days — feeds policy and routing decisions.',
+        'R-009': 'Tonnage and ₨ value of fruits & vegetables in cold storage by commodity and facility, with utilization %.',
+        'R-010': 'Monthly revenue, operating cost and net profit/loss for storage and market operations.'
+      };
+      document.getElementById('reports').innerHTML = allReports.map(r => `
+        <div class="report-card">
+          <div>
+            <div class="title" data-help="${reportPurpose[r.id] || 'PAMRA scheduled report.'}">${r.title}</div>
+            <div class="meta">Report ID ${r.id} · Last run ${r.last_run}</div>
+          </div>
+          <div><span class="freq" data-help="How often this report is automatically produced.">${r.frequency}</span></div>
+          <div><span class="fmt" data-help="File format the report is exported in.">${r.format}</span></div>
+          <div><button class="btn ghost" onclick="alert('Generating ${r.title} (${r.format})... In production this would queue a job and email the result.')">Generate</button></div>
+        </div>
+      `).join('');
+
+      // ───── Render charts ─────
+      drawAll();
+      let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(drawAll, 150); });
+    })();
+
+    function drawAll() {
+      renderCommodityBars(document.getElementById('chart-commodity'), storage);
+      renderArea(document.getElementById('chart-value'), monthly);
+      renderPL(document.getElementById('chart-pl'), monthly);
+      renderShare();
+    }
+
+    function fitCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      return { ctx, w: rect.width, h: rect.height };
+    }
+
+    // Vertical bars per commodity, coloured by category (tonnes)
+    function renderCommodityBars(canvas, items) {
+      const { ctx, w, h } = fitCanvas(canvas);
+      const pad = { l: 40, r: 8, t: 12, b: 34 };
+      const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+      const max = Math.max(...items.map(d => d.tonnes)) * 1.08;
+      const bw = cw / items.length;
+      ctx.font = '9px -apple-system, sans-serif'; ctx.strokeStyle = '#e2e8f0';
+      for (let i = 0; i <= 4; i++) { const y = pad.t + (ch * i / 4); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cw, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.fillText(Math.round((max - max * i / 4) / 1000) + 'k', 4, y + 3); }
+      items.forEach((d, i) => {
+        const x = pad.l + i * bw, bh = (d.tonnes / max) * ch;
+        ctx.fillStyle = d.cat === 'veg' ? '#186b34' : '#c9a227';
+        ctx.fillRect(x + bw * 0.18, pad.t + ch - bh, bw * 0.64, bh);
+        ctx.save(); ctx.translate(x + bw * 0.5, h - 22); ctx.rotate(-Math.PI / 5);
+        ctx.fillStyle = '#64748b'; ctx.font = '9px -apple-system, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(d.name, 0, 12); ctx.restore();
+      });
+    }
+
+    // Area + line of monthly stored value
+    function renderArea(canvas, data) {
+      const { ctx, w, h } = fitCanvas(canvas);
+      const pad = { l: 46, r: 12, t: 14, b: 22 };
+      const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+      const max = Math.max(...data.map(d => d.stored)) * 1.08, min = 0;
+      const xy = (i, v) => [pad.l + (i / (data.length - 1)) * cw, pad.t + ch - ((v - min) / (max - min || 1)) * ch];
+      ctx.strokeStyle = '#e2e8f0'; ctx.font = '9px -apple-system, sans-serif';
+      for (let i = 0; i <= 4; i++) { const y = pad.t + (ch * i / 4); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cw, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.fillText('₨' + ((max - max * i / 4) / 1e9).toFixed(1) + 'bn', 2, y + 3); }
+      ctx.fillStyle = 'rgba(24,107,52,0.12)'; ctx.beginPath();
+      data.forEach((d, i) => { const [x, y] = xy(i, d.stored); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      const [lastX] = xy(data.length - 1, data[data.length - 1].stored); ctx.lineTo(lastX, pad.t + ch); ctx.lineTo(pad.l, pad.t + ch); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#186b34'; ctx.lineWidth = 2; ctx.beginPath();
+      data.forEach((d, i) => { const [x, y] = xy(i, d.stored); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }); ctx.stroke();
+      ctx.fillStyle = '#94a3b8'; ctx.font = '9px -apple-system, sans-serif'; ctx.textAlign = 'center';
+      data.forEach((d, i) => { if (i % 2 === 0) { const [x] = xy(i, d.stored); ctx.fillText(d.month, x, h - 6); } });
+      ctx.textAlign = 'left';
+    }
+
+    // Grouped revenue vs cost bars + net-profit line
+    function renderPL(canvas, data) {
+      const { ctx, w, h } = fitCanvas(canvas);
+      const pad = { l: 44, r: 12, t: 12, b: 22 };
+      const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+      const max = Math.max(...data.map(d => Math.max(d.revenue, d.cost))) * 1.1;
+      const bw = cw / data.length;
+      ctx.font = '9px -apple-system, sans-serif'; ctx.strokeStyle = '#e2e8f0';
+      for (let i = 0; i <= 4; i++) { const y = pad.t + (ch * i / 4); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cw, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.fillText('₨' + Math.round((max - max * i / 4) / 1e6) + 'M', 2, y + 3); }
+      data.forEach((d, i) => {
+        const x = pad.l + i * bw;
+        const rh = (d.revenue / max) * ch, coh = (d.cost / max) * ch;
+        ctx.fillStyle = '#186b34'; ctx.fillRect(x + bw * 0.14, pad.t + ch - rh, bw * 0.34, rh);
+        ctx.fillStyle = '#cbd5e1'; ctx.fillRect(x + bw * 0.52, pad.t + ch - coh, bw * 0.34, coh);
+        ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.fillText(d.month, x + bw * 0.5, h - 6); ctx.textAlign = 'left';
+      });
+      // net profit line (gold)
+      ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 2; ctx.beginPath();
+      data.forEach((d, i) => { const x = pad.l + i * bw + bw * 0.5; const y = pad.t + ch - (d.profit / max) * ch; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }); ctx.stroke();
+      data.forEach((d, i) => { const x = pad.l + i * bw + bw * 0.5; const y = pad.t + ch - (d.profit / max) * ch; ctx.fillStyle = d.profit >= 0 ? '#c9a227' : '#b8312f'; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fill(); });
+    }
+
+    // Vegetables vs fruits — value share bar + table
+    function renderShare() {
+      const vegVal = storage.filter(s => s.cat === 'veg').reduce((a, s) => a + s.value, 0);
+      const fruitVal = storage.filter(s => s.cat === 'fruit').reduce((a, s) => a + s.value, 0);
+      const total = vegVal + fruitVal;
+      const vp = (vegVal / total * 100), fp = (fruitVal / total * 100);
+      document.getElementById('sharebar').innerHTML = `
+        <div style="width:${vp}%;background:#186b34">${vp.toFixed(0)}%</div>
+        <div style="width:${fp}%;background:#c9a227">${fp.toFixed(0)}%</div>`;
+      document.getElementById('share-legend').innerHTML = `
+        <span><i style="background:#186b34"></i> Vegetables · ${fmtBn(vegVal)}</span>
+        <span><i style="background:#c9a227"></i> Fruits · ${fmtBn(fruitVal)}</span>`;
+      const rows = [...storage].sort((a, b) => b.value - a.value).map(s => `
+        <tr><td><span class="dot" style="background:${s.cat === 'veg' ? '#186b34' : '#c9a227'}"></span>${s.name}</td>
+        <td class="r">${s.tonnes.toLocaleString()} t</td><td class="r">${fmtBn(s.value)}</td></tr>`).join('');
+      document.getElementById('store-table').innerHTML =
+        `<thead><tr><th>Commodity</th><th class="r">Stored</th><th class="r">Value</th></tr></thead><tbody>${rows}</tbody>`;
+    }
+  </script>
+</body>
+</html>

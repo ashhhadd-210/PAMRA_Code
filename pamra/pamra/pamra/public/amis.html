@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PAMRA · AMIS — Agricultural Marketing Information Service</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    .amis-banner {
+      background: linear-gradient(120deg, var(--green-800), var(--green-700));
+      color: #fff; border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .amis-banner h1 { margin: 0; font-size: 20px; color: #fff; }
+    .amis-banner .ur { font-size: 16px; opacity: 0.9; }
+    .amis-banner p { margin: 4px 0 0; font-size: 12px; opacity: 0.85; max-width: 620px; }
+    .amis-banner .live { font-size: 11px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+    .amis-banner .live .dot { display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:6px;box-shadow:0 0 8px #4ade80; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .kpi { background: #fff; border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--green-700); }
+    .kpi.up { border-left-color: var(--green-600); }
+    .kpi.down { border-left-color: var(--red); }
+    .kpi .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--slate-500); font-weight: 700; }
+    .kpi .value { font-size: 20px; font-weight: 800; color: var(--slate-900); margin-top: 3px; }
+    .kpi .meta { font-size: 11px; color: var(--slate-500); margin-top: 2px; }
+    .kpi .value.up { color: var(--green-700); } .kpi .value.down { color: var(--red); }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background:#fff; padding:12px 14px; border-radius:var(--radius); box-shadow:var(--shadow-sm); margin-bottom:14px; }
+    .seg { display: inline-flex; border: 1px solid var(--slate-200); border-radius: 8px; overflow: hidden; }
+    .seg button { border: none; background: #fff; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--slate-600); }
+    .seg button.active { background: var(--green-700); color: #fff; }
+    .controls select, .controls input { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--slate-200); font-size: 13px; background: #fff; }
+    .controls input { flex: 1; min-width: 140px; }
+    .controls .lbl { font-size: 11px; color: var(--slate-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .controls .spacer { flex: 1; }
+
+    .layout { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 1050px) { .layout { grid-template-columns: 1fr; } }
+
+    table.amis { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.amis thead th {
+      position: sticky; top: 0; background: var(--green-50); color: var(--green-800);
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;
+      padding: 9px 10px; border-bottom: 2px solid var(--green-100); white-space: nowrap;
+    }
+    table.amis thead th.l { text-align: left; }
+    table.amis tbody td { padding: 9px 10px; border-bottom: 1px solid var(--slate-100); text-align: right; font-variant-numeric: tabular-nums; }
+    table.amis tbody td.l { text-align: left; }
+    table.amis tbody tr:hover { background: var(--slate-50); }
+    .c-name { font-weight: 700; color: var(--slate-900); }
+    .c-ur { font-size: 13px; color: var(--slate-500); margin-left: 6px; }
+    .variety { font-size: 11px; color: var(--slate-500); }
+    .modal-px { font-weight: 700; color: var(--green-800); }
+    .per40 { font-size: 11px; color: var(--slate-500); }
+    .chg { font-weight: 600; white-space: nowrap; }
+    .chg.up { color: var(--green-700); } .chg.down { color: var(--red); }
+    .tbl-wrap { max-height: 560px; overflow-y: auto; }
+    .table-foot { font-size: 11px; color: var(--slate-400); padding: 8px 10px; }
+
+    #price-chart { width: 100%; height: 230px; background: var(--slate-50); border-radius: 6px; }
+    .chart-head { display:flex; gap:6px; }
+    .chart-head select { padding: 5px 8px; border-radius: 6px; border: 1px solid var(--slate-200); font-size: 12px; }
+
+    table.intl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.intl th { text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-500); padding: 7px 8px; border-bottom: 1px solid var(--slate-100); }
+    table.intl th.l, table.intl td.l { text-align: left; }
+    table.intl td { padding: 8px; border-bottom: 1px solid var(--slate-100); text-align: right; font-variant-numeric: tabular-nums; }
+    .exch { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--slate-100); color: var(--slate-600); }
+    .ccy-usd { background: #dbeafe; color: #1e40af; } .ccy-inr { background: #fef3c7; color: #92400e; }
+    .intl-note { font-size: 11px; color: var(--slate-500); margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div id="pamra-header-slot"></div>
+  <main class="page">
+    <div class="amis-banner">
+      <div>
+        <h1>AMIS — Agricultural Marketing Information Service <span class="ur">منڈی نرخنامہ</span></h1>
+        <p>Daily auction / wholesale prices &amp; arrivals of agricultural commodities from PAMRA markets across Punjab — Directorate of Agriculture (Economics &amp; Marketing).</p>
+      </div>
+      <span class="live" id="ticker"><span class="dot"></span>Live mandi feed</span>
+    </div>
+
+    <div class="stat-row" id="kpis"></div>
+
+    <div class="controls">
+      <span class="lbl">View</span>
+      <div class="seg" id="mode">
+        <button data-mode="market" class="active">By Market</button>
+        <button data-mode="commodity">By Commodity</button>
+      </div>
+      <span class="lbl" id="ctx-lbl">Market</span>
+      <select id="ctx"></select>
+      <span class="lbl">Date</span>
+      <select id="date"></select>
+      <input id="search" placeholder="Search commodity / market…" />
+    </div>
+
+    <div class="layout">
+      <!-- Price table -->
+      <div class="card">
+        <div class="card-header">
+          <h2 id="table-title" data-help="Auction/wholesale price list. Min/Max are the day's range; Average is the modal (most-frequent) rate. Per-40kg is the maund price quoted in mandis.">Price list</h2>
+          <span class="hint" id="table-sub"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="amis">
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-foot" id="foot"></div>
+      </div>
+
+      <!-- Right column -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-header">
+            <h2 data-help="30-day price trend. Shaded band is the daily min–max range; the line is the modal price.">30-day trend</h2>
+            <div class="chart-head">
+              <select id="mSel"></select>
+              <select id="cSel"></select>
+            </div>
+          </div>
+          <div class="card-body"><canvas id="price-chart"></canvas></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 data-help="International reference prices converted to PKR — like amis.pk, USD from CBOT/NYMEX and INR from NCDEX India. Helps compare local vs world rates.">International prices → PKR</h2>
+            <span class="hint">per 40 kg</span>
+          </div>
+          <div class="card-body" style="padding-top:6px">
+            <table class="intl">
+              <thead><tr><th class="l">Commodity</th><th class="l">Exch.</th><th>World price</th><th>PKR/40kg</th></tr></thead>
+              <tbody id="intl"></tbody>
+            </table>
+            <div class="intl-note">Source: Chicago Board of Trade · NYMEX · NCDEX India. USD→PKR ≈ 278.5, INR→PKR ≈ 3.34.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/pamra-backend.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    const S = { mode: 'market', ctx: null, date: null, query: '', snapshot: [], markets: [], commodities: [], meta: {} };
+
+    (async () => {
+      const me = await PAMRA.requireAuth();
+      if (!me) return;
+      PAMRA.renderHeader('amis');
+
+      const [markets, commodities, meta, dates, intl] = await Promise.all([
+        PAMRA.api('/api/markets'),
+        PAMRA.api('/api/amis/commodities'),
+        PAMRA.api('/api/amis/meta'),
+        PAMRA.api('/api/amis/dates'),
+        PAMRA.api('/api/amis/international')
+      ]);
+      S.markets = markets; S.commodities = commodities; S.meta = meta;
+      S.ctx = markets[0].id;
+      S.date = dates[dates.length - 1];
+
+      // Date selector (newest first)
+      const dateSel = document.getElementById('date');
+      [...dates].reverse().forEach((d, i) => dateSel.insertAdjacentHTML('beforeend', `<option value="${d}">${d}${i === 0 ? ' (today)' : ''}</option>`));
+
+      // Chart selectors
+      const mSel = document.getElementById('mSel'), cSel = document.getElementById('cSel');
+      markets.forEach(m => mSel.insertAdjacentHTML('beforeend', `<option value="${m.id}">${m.name}</option>`));
+      commodities.forEach(c => cSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+
+      // International prices
+      document.getElementById('intl').innerHTML = intl.map(r => `
+        <tr>
+          <td class="l"><span class="c-name">${cap(r.commodity)}</span><span class="c-ur">${r.urdu}</span></td>
+          <td class="l"><span class="exch">${r.exchange}</span></td>
+          <td><span class="exch ${r.source_ccy === 'USD' ? 'ccy-usd' : 'ccy-inr'}">${r.intl_price}</span></td>
+          <td class="modal-px">Rs ${r.pkr_per_40kg.toLocaleString()}</td>
+        </tr>`).join('');
+
+      // Events
+      document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#mode button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        S.mode = b.dataset.mode;
+        buildCtx();
+        render();
+      }));
+      document.getElementById('ctx').addEventListener('change', e => { S.ctx = e.target.value; render(); });
+      document.getElementById('search').addEventListener('input', e => { S.query = e.target.value.toLowerCase(); render(); });
+      dateSel.addEventListener('change', async e => { S.date = e.target.value; await loadSnapshot(); render(); });
+      mSel.addEventListener('change', drawChart);
+      cSel.addEventListener('change', drawChart);
+
+      buildCtx();
+      await loadSnapshot();
+      render();
+      drawChart();
+    })();
+
+    function cap(s) { return s.charAt(0) + s.slice(1).toLowerCase(); }
+
+    function buildCtx() {
+      const ctx = document.getElementById('ctx');
+      document.getElementById('ctx-lbl').textContent = S.mode === 'market' ? 'Market' : 'Commodity';
+      if (S.mode === 'market') {
+        ctx.innerHTML = S.markets.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+        S.ctx = S.markets[0].id;
+      } else {
+        ctx.innerHTML = S.commodities.map(c => `<option value="${c}">${cap(c)}</option>`).join('');
+        S.ctx = S.commodities[0];
+      }
+    }
+
+    async function loadSnapshot() {
+      S.snapshot = await PAMRA.api('/api/amis/snapshot?date=' + encodeURIComponent(S.date));
+      renderKpis();
+    }
+
+    function renderKpis() {
+      const snap = S.snapshot;
+      const reporting = new Set(snap.map(r => r.market_id)).size;
+      const movers = [...snap].sort((a, b) => b.change_pct - a.change_pct);
+      const up = movers[0], down = movers[movers.length - 1];
+      const totalArr = snap.reduce((s, r) => s + r.arrivals_kg, 0);
+      document.getElementById('kpis').innerHTML = `
+        <div class="kpi"><div class="label">Markets reporting</div><div class="value">${reporting}<span style="font-size:13px;color:var(--slate-400)"> / ${S.markets.length}</span></div><div class="meta">${S.commodities.length} commodities tracked</div></div>
+        <div class="kpi"><div class="label">Total arrivals</div><div class="value">${Math.round(totalArr / 1000).toLocaleString()}<span style="font-size:13px;color:var(--slate-400)"> t</span></div><div class="meta">across all markets, ${S.date}</div></div>
+        <div class="kpi up"><div class="label">Top gainer</div><div class="value up">▲ ${up.change_pct.toFixed(1)}%</div><div class="meta">${cap(up.commodity)} · ${up.market_name}</div></div>
+        <div class="kpi down"><div class="label">Top decliner</div><div class="value down">▼ ${Math.abs(down.change_pct).toFixed(1)}%</div><div class="meta">${cap(down.commodity)} · ${down.market_name}</div></div>
+      `;
+    }
+
+    function render() {
+      const byMarket = S.mode === 'market';
+      let rows = S.snapshot.filter(r => byMarket ? r.market_id === S.ctx : r.commodity === S.ctx);
+      if (S.query) rows = rows.filter(r => (r.commodity + r.market_name + r.commodity_urdu).toLowerCase().includes(S.query));
+
+      const ctxName = byMarket ? (S.markets.find(m => m.id === S.ctx) || {}).name : cap(S.ctx);
+      document.getElementById('table-title').textContent = byMarket ? `${ctxName} — all commodities` : `${ctxName} — all markets`;
+      document.getElementById('table-sub').textContent = `${rows.length} rows · ${S.date}`;
+
+      const firstCol = byMarket
+        ? '<th class="l">Commodity</th><th class="l">Variety</th>'
+        : '<th class="l">Market</th><th class="l">Variety</th>';
+      document.getElementById('thead').innerHTML =
+        `<tr>${firstCol}<th>Unit</th><th>Min</th><th>Max</th><th>Average</th><th>Per 40kg</th><th>Arrivals</th><th>Δ%</th></tr>`;
+
+      document.getElementById('tbody').innerHTML = rows.map(r => {
+        const first = byMarket
+          ? `<td class="l"><span class="c-name">${cap(r.commodity)}</span><span class="c-ur">${r.commodity_urdu}</span></td><td class="l variety">${r.variety}</td>`
+          : `<td class="l"><span class="c-name">${r.market_name}</span></td><td class="l variety">${r.variety}</td>`;
+        const dir = r.change_pct >= 0 ? 'up' : 'down';
+        return `<tr>
+          ${first}
+          <td class="per40">${r.unit}</td>
+          <td>Rs ${r.min_pkr}</td>
+          <td>Rs ${r.max_pkr}</td>
+          <td class="modal-px">Rs ${r.modal_pkr}</td>
+          <td class="per40">Rs ${r.per_40kg.toLocaleString()}</td>
+          <td>${(r.arrivals_kg / 1000).toFixed(1)} t</td>
+          <td class="chg ${dir}">${r.change_pct >= 0 ? '▲' : '▼'} ${Math.abs(r.change_pct).toFixed(1)}</td>
+        </tr>`;
+      }).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--slate-400);padding:24px">No rows match your search.</td></tr>`;
+
+      document.getElementById('foot').textContent = `Prices in PKR per kg unless noted. "Average" = modal (most-frequent) auction rate. Per-40kg = maund price.`;
+    }
+
+    async function drawChart() {
+      const m = document.getElementById('mSel').value, c = document.getElementById('cSel').value;
+      const data = await PAMRA.api(`/api/amis/history?market=${m}&commodity=${c}`);
+      renderCanvasChart(document.getElementById('price-chart'), data);
+    }
+
+    // Tiny canvas line+area chart (no external lib)
+    function renderCanvasChart(canvas, points) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      if (!points.length) return;
+      const pad = { l: 48, r: 14, t: 14, b: 22 };
+      const w = rect.width - pad.l - pad.r, h = rect.height - pad.t - pad.b;
+      const min = Math.min(...points.map(p => p.min)), max = Math.max(...points.map(p => p.max));
+      const xy = (i, v) => [pad.l + (i / (points.length - 1)) * w, pad.t + h - ((v - min) / (max - min || 1)) * h];
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.font = '10px -apple-system, sans-serif'; ctx.fillStyle = '#94a3b8';
+      for (let i = 0; i <= 4; i++) { const y = pad.t + (h * i / 4); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + w, y); ctx.stroke(); ctx.fillText(`Rs ${(max - ((max - min) * i / 4)).toFixed(0)}`, 4, y + 3); }
+      ctx.fillStyle = 'rgba(46, 161, 85, 0.12)'; ctx.beginPath();
+      points.forEach((p, i) => { const [x, y] = xy(i, p.max); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      for (let i = points.length - 1; i >= 0; i--) { const [x, y] = xy(i, points[i].min); ctx.lineTo(x, y); }
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#186b34'; ctx.lineWidth = 2; ctx.beginPath();
+      points.forEach((p, i) => { const [x, y] = xy(i, p.modal); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.stroke();
+      const last = points[points.length - 1]; const [lx, ly] = xy(points.length - 1, last.modal);
+      ctx.fillStyle = '#186b34'; ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0f172a'; ctx.font = '11px -apple-system, sans-serif'; ctx.fillText(`Rs ${last.modal}`, lx - 30, ly - 10);
+      ctx.fillStyle = '#94a3b8'; ctx.font = '10px -apple-system, sans-serif';
+      [points[0].date, points[Math.floor(points.length / 2)].date, points[points.length - 1].date].forEach((d, i) => {
+        const x = pad.l + (i / 2) * w; ctx.fillText(d.slice(5), x - 14, rect.height - 6);
+      });
+    }
+  </script>
+</body>
+</html>

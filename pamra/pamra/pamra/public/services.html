@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services · PAMRA</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style>
+    .service-section { padding: 36px 0; border-bottom: 1px solid var(--slate-100); }
+    .service-section:last-child { border-bottom: none; }
+    .service-section .lead-row { display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: start; margin-bottom: 20px; }
+    .service-section .big-icon { width: 64px; height: 64px; border-radius: 12px; background: var(--green-bg); color: var(--pk-green); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; }
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+    .step { background: var(--slate-50); padding: 18px; border-radius: 8px; border-top: 3px solid var(--gold); }
+    .step .n { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1px; }
+    .step h4 { margin: 4px 0 8px; font-size: 15px; }
+    .step p { font-size: 13px; color: var(--slate-500); margin: 0; }
+
+    /* PAMRA ID registration modal */
+    .idm-overlay { position: fixed; inset: 0; background: rgba(4,18,13,.55); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .idm-overlay.open { display: flex; }
+    .idm-box { background: white; border-radius: 14px; max-width: 470px; width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,.35); overflow: hidden; max-height: 92vh; overflow-y: auto; }
+    .idm-head { background: var(--pk-green); color: white; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; }
+    .idm-head h3 { margin: 0; font-size: 18px; }
+    .idm-head .x { background: none; border: none; color: white; font-size: 22px; cursor: pointer; line-height: 1; opacity: .8; }
+    .idm-head .x:hover { opacity: 1; }
+    .idm-body { padding: 22px; }
+    .idm-field { margin-bottom: 14px; }
+    .idm-field label { display: block; font-size: 12px; font-weight: 700; color: var(--slate-700); margin-bottom: 5px; }
+    .idm-field input, .idm-field select { width: 100%; padding: 10px 12px; border: 1px solid var(--slate-200); border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+    .idm-field input:focus, .idm-field select:focus { outline: none; border-color: var(--pk-green); }
+    .idm-err { color: var(--red); font-size: 13px; margin: 4px 0 10px; display: none; }
+    .idm-actions { display: flex; gap: 10px; margin-top: 6px; }
+    .idm-actions .btn-primary, .idm-actions .btn-secondary { flex: 1; text-align: center; cursor: pointer; border: none; }
+    .idm-actions .btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+    /* digital ID card */
+    .idcard { border: 1px solid var(--green-line); border-radius: 12px; overflow: hidden; }
+    .idcard-top { background: linear-gradient(135deg, var(--pk-green), var(--pk-green-light)); color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+    .idcard-top .org { font-size: 11px; letter-spacing: 1px; opacity: .85; }
+    .idcard-top .ttl { font-weight: 800; font-size: 15px; margin-top: 2px; }
+    .idcard-body { padding: 18px; display: grid; grid-template-columns: 1fr 92px; gap: 16px; align-items: start; }
+    .idcard .idno { font-family: ui-monospace, Menlo, monospace; font-size: 17px; font-weight: 800; color: var(--pk-green); letter-spacing: .5px; }
+    .idcard .rw { font-size: 13px; margin-top: 7px; color: var(--slate-500); }
+    .idcard .rw b { color: var(--slate-900); font-weight: 700; }
+    .badge-active { background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+    .qr { width: 88px; height: 88px; display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: white; padding: 4px; border: 1px solid var(--slate-200); border-radius: 6px; }
+    .qr i { background: #0f172a; border-radius: 1px; }
+    .qr i.off { background: transparent; }
+    @media print { body * { visibility: hidden; } .idm-overlay, .idm-overlay * { visibility: visible; } .idm-overlay { position: absolute; background: white; } .idm-head .x, .idm-actions { display: none; } }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Home</a> · Services</div>
+      <h1 data-i18n="hero_services">Services</h1>
+      <p class="lead" data-i18n="hero_services_l">PAMRA provides regulatory, operational, and digital services to farmers, traders, market committees, and government policymakers.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+
+      <!-- For farmers -->
+      <div class="service-section">
+        <div class="lead-row">
+          <div class="big-icon">F</div>
+          <div>
+            <h2 style="margin:0 0 6px;color:var(--pk-green)">For Farmers</h2>
+            <p style="color:var(--slate-700);font-size:15px;margin:0">Protecting cultivators from undervaluation through transparent price discovery and fair auction practices.</p>
+          </div>
+        </div>
+        <ul style="color:var(--slate-700);line-height:1.8;font-size:14px;margin-top:8px">
+          <li><strong>Daily commodity prices</strong> published openly on <a href="/prices">prices.pamra.punjab.gov.pk</a> — 30-day trends, modal/min/max per commodity per market.</li>
+          <li><strong>Transparent auctions</strong> with live streaming to PAMRA HQ control room; reduce middleman manipulation.</li>
+          <li><strong>Direct mandi access</strong> — registered farmers can transport produce to any PAMRA mandi without intermediary fees.</li>
+          <li><strong>Grievance redressal</strong> via WhatsApp helpline and online complaint portal.</li>
+        </ul>
+        <button type="button" class="btn-green" style="margin-top:14px" onclick="PamraID.open('farmer')">Get your Farmer ID →</button>
+      </div>
+
+      <!-- For traders -->
+      <div class="service-section">
+        <div class="lead-row">
+          <div class="big-icon">T</div>
+          <div>
+            <h2 style="margin:0 0 6px;color:var(--pk-green)">For Traders</h2>
+            <p style="color:var(--slate-700);font-size:15px;margin:0">CNIC-based registration, vehicle linking, and a digital trail of every transaction.</p>
+          </div>
+        </div>
+        <ul style="color:var(--slate-700);line-height:1.8;font-size:14px;margin-top:8px">
+          <li><strong>One-time online registration</strong> with CNIC verification via NADRA.</li>
+          <li><strong>Vehicle/RFID linking</strong> — registered trucks pass through gate ANPR in seconds.</li>
+          <li><strong>Personal auction history</strong> accessible 24/7 via OTP login.</li>
+          <li><strong>License compliance tracking</strong> with automatic renewal reminders.</li>
+        </ul>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn-green" onclick="PamraID.open('trader')">Register for Trader ID →</button>
+          <a href="/login" class="btn-secondary" style="display:inline-block">Sign in as trader →</a>
+        </div>
+      </div>
+
+      <!-- For committees -->
+      <div class="service-section">
+        <div class="lead-row">
+          <div class="big-icon">C</div>
+          <div>
+            <h2 style="margin:0 0 6px;color:var(--pk-green)">For Market Committees</h2>
+            <p style="color:var(--slate-700);font-size:15px;margin:0">Tools for committee secretaries, cashiers, and inspectors to run mandi operations day-to-day.</p>
+          </div>
+        </div>
+        <ul style="color:var(--slate-700);line-height:1.8;font-size:14px;margin-top:8px">
+          <li><strong>MCMIS</strong> — staff attendance, finance, infrastructure issue tracking.</li>
+          <li><strong>Revenue reporting</strong> — automatic monthly digests to PAMRA HQ.</li>
+          <li><strong>Inspector field app</strong> for on-the-spot auction recording.</li>
+          <li><strong>Training resources</strong> for digital adoption and AI gate operation.</li>
+        </ul>
+      </div>
+
+      <!-- Platform -->
+      <div class="service-section" id="platform">
+        <div class="lead-row">
+          <div class="big-icon" style="background:var(--gold-light);color:var(--gold)">★</div>
+          <div>
+            <h2 style="margin:0 0 6px;color:var(--pk-green)">Unified Market Intelligence Platform</h2>
+            <p style="color:var(--slate-700);font-size:15px;margin:0">The digital backbone connecting every PAMRA system, every market, every transaction.</p>
+          </div>
+        </div>
+        <p style="color:var(--slate-700);font-size:14px">The Platform unifies <strong>MCMIS</strong>, <strong>AMIS</strong>, and the <strong>Mandi Auction App</strong> into one source of truth. Every incoming record is verified by a four-layer authenticity engine before being published.</p>
+        <div class="step-grid">
+          <div class="step">
+            <div class="n">LAYER 1</div>
+            <h4>Cross-source validation</h4>
+            <p>Records that disagree across MCMIS, AMIS, and Mandi App are flagged for review.</p>
+          </div>
+          <div class="step">
+            <div class="n">LAYER 2</div>
+            <h4>Statistical anomaly</h4>
+            <p>Prices and volumes outside the rolling 30-day distribution are caught automatically.</p>
+          </div>
+          <div class="step">
+            <div class="n">LAYER 3</div>
+            <h4>Geo + staff</h4>
+            <p>GPS must lie inside the market geofence; staff must be on the day's roster.</p>
+          </div>
+          <div class="step">
+            <div class="n">LAYER 4</div>
+            <h4>ML fraud scoring</h4>
+            <p>Trained model assigns a confidence score; low-score entries are quarantined for review.</p>
+          </div>
+        </div>
+        <a href="/login" class="btn-primary" style="margin-top:20px">Access Platform</a>
+      </div>
+
+      <!-- Gate automation -->
+      <div class="service-section" id="gate">
+        <div class="lead-row">
+          <div class="big-icon" style="background:var(--gold-light);color:var(--gold)">G</div>
+          <div>
+            <h2 style="margin:0 0 6px;color:var(--pk-green)">Gate Automation</h2>
+            <p style="color:var(--slate-700);font-size:15px;margin:0">AI-powered capture at every mandi gate — no manual entry, no missing records, no fake transactions.</p>
+          </div>
+        </div>
+        <div class="step-grid">
+          <div class="step">
+            <div class="n">STATION 1</div>
+            <h4>ANPR camera</h4>
+            <p>Truck number plate read by camera, cross-checked against the registered vehicles database.</p>
+          </div>
+          <div class="step">
+            <div class="n">STATION 2</div>
+            <h4>CNIC kiosk</h4>
+            <p>Driver presents CNIC; NADRA-style verification confirms identity and links to plate.</p>
+          </div>
+          <div class="step">
+            <div class="n">STATION 3</div>
+            <h4>Commodity AI</h4>
+            <p>Overhead camera classifies the produce in the truck bed and compares with declared commodity.</p>
+          </div>
+          <div class="step">
+            <div class="n">STATION 4</div>
+            <h4>Weighbridge</h4>
+            <p>Load cells capture gross-in and tare-out weights automatically; net is computed and pushed to the records pipeline.</p>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--slate-500);margin-top:14px">Every completed flow generates a fully verified arrival record in the Unified Data Bus — feeding directly into commodity dashboards, revenue calculations, and analytics.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PAMRA ID registration modal -->
+  <div id="id-modal" class="idm-overlay" onclick="if(event.target===this)PamraID.close()">
+    <div class="idm-box" id="id-modal-box"></div>
+  </div>
+
+  <div id="site-footer-slot"></div>
+  <script src="/pamra-backend.js"></script>
+  <script src="/translations.js"></script>
+  <script src="/public.js"></script>
+  <script>SitePublic.render('services');</script>
+  <script>
+  // ───────────── PAMRA Farmer / Trader ID registration (client-side) ─────────────
+  const PamraID = (() => {
+    const KEY = 'pamra_ids';
+    const DISTRICTS = ['Lahore','Faisalabad','Rawalpindi','Gujranwala','Multan','Sialkot','Bahawalpur','Sargodha','Sahiwal','Sheikhupura','Kasur','Okara','Vehari','Jhang','Rahim Yar Khan','Dera Ghazi Khan'];
+    const overlay = () => document.getElementById('id-modal');
+    const box = () => document.getElementById('id-modal-box');
+
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+    const save = (o) => localStorage.setItem(KEY, JSON.stringify(o));
+    const digits = (s) => (s || '').replace(/\D/g, '');
+    function hashNum(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0); }
+    function genId(type, cnic) {
+      const yy = String(new Date().getFullYear()).slice(2);
+      const n = (hashNum(type + cnic) % 1000000).toString().padStart(6, '0');
+      return `PMR-${type === 'farmer' ? 'FRM' : 'TRD'}-${yy}-${n}`;
+    }
+    function maskCnic(c) { const d = digits(c); return d.length === 13 ? `${d.slice(0,5)}-*****${d.slice(10)}` : c; }
+    function qr(seedStr) {
+      let h = hashNum(seedStr); const cells = [];
+      for (let i = 0; i < 81; i++) { h = (h * 1103515245 + 12345) >>> 0; cells.push((h >> 7) & 1 ? '' : ' off'); }
+      // fixed finder corners for a QR-ish look
+      [0,1,7,8,9,17,63,64,72,73,74,80].forEach(i => cells[i] = '');
+      return `<div class="qr">${cells.map(c => `<i class="${c}"></i>`).join('')}</div>`;
+    }
+
+    function open(type) {
+      const isFarmer = type === 'farmer';
+      box().innerHTML = `
+        <div class="idm-head">
+          <h3>${isFarmer ? 'Farmer Registration' : 'Trader Registration'}</h3>
+          <button class="x" onclick="PamraID.close()" aria-label="Close">×</button>
+        </div>
+        <div class="idm-body">
+          <p style="margin:0 0 16px;color:var(--slate-500);font-size:13px">Register once to receive your PAMRA ${isFarmer ? 'Farmer' : 'Trader'} ID — your verified identity for every transaction in Punjab's mandis.</p>
+          <div class="idm-field"><label>Full name</label><input id="f-name" placeholder="As per CNIC" /></div>
+          <div class="idm-field"><label>CNIC number</label><input id="f-cnic" inputmode="numeric" placeholder="35202-1234567-8" maxlength="15" /></div>
+          <div class="idm-field"><label>Mobile number</label><input id="f-mobile" inputmode="numeric" placeholder="03001234567" maxlength="11" /></div>
+          <div class="idm-field"><label>District</label><select id="f-district">${DISTRICTS.map(d => `<option>${d}</option>`).join('')}</select></div>
+          ${isFarmer
+            ? `<div class="idm-field"><label>Primary crop (optional)</label><input id="f-extra" placeholder="e.g. Wheat, Potato" /></div>`
+            : `<div class="idm-field"><label>Business name (optional)</label><input id="f-extra" placeholder="Trading firm" /></div>
+               <div class="idm-field"><label>Vehicle reg. (optional)</label><input id="f-extra2" placeholder="LEA-1234" /></div>`}
+          <div class="idm-err" id="f-err"></div>
+          <div class="idm-actions">
+            <button class="btn-secondary" onclick="PamraID.close()">Cancel</button>
+            <button class="btn-primary" onclick="PamraID.submit('${type}')">Issue my ${isFarmer ? 'Farmer' : 'Trader'} ID</button>
+          </div>
+        </div>`;
+      overlay().classList.add('open');
+    }
+
+    function submit(type) {
+      const name = document.getElementById('f-name').value.trim();
+      const cnic = digits(document.getElementById('f-cnic').value);
+      const mobile = digits(document.getElementById('f-mobile').value);
+      const district = document.getElementById('f-district').value;
+      const extra = (document.getElementById('f-extra') || {}).value || '';
+      const extra2 = (document.getElementById('f-extra2') || {}).value || '';
+      const err = document.getElementById('f-err');
+      const fail = (m) => { err.textContent = m; err.style.display = 'block'; };
+      if (name.length < 3) return fail('Please enter your full name.');
+      if (cnic.length !== 13) return fail('CNIC must be 13 digits.');
+      if (mobile.length !== 11) return fail('Mobile number must be 11 digits.');
+
+      const store = load();
+      const key = type + '_' + cnic;
+      let rec = store[key];
+      let returning = false;
+      if (rec) { returning = true; }
+      else {
+        rec = { id: genId(type, cnic), type, name, cnic, mobile, district, extra, extra2, issued: new Date().toISOString().slice(0, 10) };
+        store[key] = rec; save(store);
+      }
+      renderCard(rec, returning);
+    }
+
+    function renderCard(rec, returning) {
+      const isFarmer = rec.type === 'farmer';
+      const extraLabel = isFarmer ? 'Primary crop' : 'Business';
+      box().innerHTML = `
+        <div class="idm-head">
+          <h3>${returning ? 'Welcome back' : 'Registration complete'}</h3>
+          <button class="x" onclick="PamraID.close()" aria-label="Close">×</button>
+        </div>
+        <div class="idm-body">
+          ${returning ? '<p style="margin:0 0 14px;color:var(--slate-500);font-size:13px">This CNIC is already registered. Here is your existing PAMRA ID.</p>' : '<p style="margin:0 0 14px;color:#166534;font-size:13px">✓ Your PAMRA ID has been issued and saved to this device.</p>'}
+          <div class="idcard">
+            <div class="idcard-top">
+              <div><div class="org">PAMRA · GOVERNMENT OF PUNJAB</div><div class="ttl">${isFarmer ? 'Farmer' : 'Trader'} Identity Card</div></div>
+              <span class="badge-active">● Active</span>
+            </div>
+            <div class="idcard-body">
+              <div>
+                <div class="idno">${rec.id}</div>
+                <div class="rw"><b>${rec.name}</b></div>
+                <div class="rw">CNIC&nbsp; <b>${maskCnic(rec.cnic)}</b></div>
+                <div class="rw">Mobile&nbsp; <b>${rec.mobile}</b></div>
+                <div class="rw">District&nbsp; <b>${rec.district}</b></div>
+                ${rec.extra ? `<div class="rw">${extraLabel}&nbsp; <b>${rec.extra}</b></div>` : ''}
+                ${rec.extra2 ? `<div class="rw">Vehicle&nbsp; <b>${rec.extra2}</b></div>` : ''}
+                <div class="rw">Issued&nbsp; <b>${rec.issued}</b></div>
+              </div>
+              ${qr(rec.id)}
+            </div>
+          </div>
+          <div class="idm-actions" style="margin-top:18px">
+            <button class="btn-secondary" onclick="window.print()">Print / Save</button>
+            <button class="btn-primary" onclick="PamraID.close()">Done</button>
+          </div>
+        </div>`;
+      overlay().classList.add('open');
+    }
+
+    function close() { overlay().classList.remove('open'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    return { open, submit, renderCard, close };
+  })();
+  </script>
+</body>
+</html>
